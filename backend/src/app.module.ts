@@ -24,8 +24,7 @@ console.log('DB_URI:', process.env.DB_URI);
 // })
 
 // Uncomment the following block to use the local MongoDB instance for development or testing purposes.
-
-
+>>>>>>>>> Temporary merge branch 2
 @Module({
   imports: [MongooseModule.forRoot('mongodb://localhost/datafusion'),
     UploadModule,

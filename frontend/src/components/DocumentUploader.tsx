@@ -36,7 +36,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
       allowImagePreview={true} // Ensures previews are enabled
       maxFiles={3}
       server={{
-        url: "http://localhost:3000", // Base API URL
+        url: "http://localhost:5000", // Base API URL
         process: {
           url: "/uploads", // Correct API endpoint
           method: "POST",
