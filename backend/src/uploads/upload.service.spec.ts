@@ -1,72 +1,3 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { UploadService } from './upload.service';
-// import { getModelToken } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
-// import { Upload, UploadDocument } from './upload.schemas';
-// import { NotFoundException } from '@nestjs/common';
-
-
-// jest.mock('pdf-parse', () => jest.fn(() => Promise.resolve({ text: 'Mock PDF content' })));
-
-// describe('UploadService', () => {
-//   let service: UploadService;
-//   let uploadModel: Model<UploadDocument>;
-
-//   const mockUploadModel = {
-//     create: jest.fn(),
-//     find: jest.fn().mockReturnThis(),
-//     populate: jest.fn().mockReturnThis(),
-//     exec: jest.fn(),
-//   };
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         UploadService,
-//         { provide: getModelToken(Upload.name), useValue: mockUploadModel },
-//       ],
-//     }).compile();
-
-//     service = module.get<UploadService>(UploadService);
-//     uploadModel = module.get<Model<UploadDocument>>(getModelToken(Upload.name));
-//   });
-
-//   it('should create and save a valid file upload', async () => {
-//     // const mockFile = { originalname: 'test.pdf', mimetype: 'application/pdf', buffer: Buffer.from('test buffer') } as Express.Multer.File;
-//     const fs = require('fs');
-//     const mockFileBuffer = fs.readFileSync('C:\\email.pdf');
-//     const mockFile = {
-//     originalname: 'test.pdf',
-//     mimetype: 'application/pdf',
-//     buffer: mockFileBuffer,
-//     } as Express.Multer.File;
-//     const mockUserId = 'user123';
-//     const mockSavedUpload = { save: jest.fn().mockResolvedValue(true) };
-
-//     jest.spyOn(uploadModel, 'create').mockReturnValue(mockSavedUpload as any);
-//     jest.spyOn(mockSavedUpload, 'save').mockResolvedValue(mockSavedUpload as any);
-
-//     const result = await service.createUpload(mockFile, mockUserId);
-
-//     expect(uploadModel.create).toHaveBeenCalledWith(expect.objectContaining({
-//       title: mockFile.originalname,
-//       type: mockFile.mimetype,
-//       uploadedBy: mockUserId,
-//     }));
-//     expect(result).toBe(mockSavedUpload);
-//   });
-
-//   it('should throw an error for unsupported file types', async () => {
-//     const mockFile = { originalname: 'test.xyz', mimetype: 'application/xyz', buffer: Buffer.from('test buffer') } as Express.Multer.File;
-//     const mockUserId = 'user123';
-
-//     await expect(service.createUpload(mockFile, mockUserId)).rejects.toThrow(
-//       new NotFoundException(`File type \"application/xyz\" is not allowed. Only PDF, Word, Excel, and TXT files are supported.`)
-//     );
-//   });
-// });
-
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { UploadService } from './upload.service';
 import { getModelToken } from '@nestjs/mongoose';
@@ -154,9 +85,6 @@ describe('UploadService', () => {
         exec: jest.fn().mockResolvedValue(mockUpload),
       } as any);
       
-    // jest.spyOn(uploadModel, 'populate').mockReturnThis();
-    // jest.spyOn(uploadModel.findById('mockId'), 'exec').mockResolvedValue(mockUpload);
-
     const result = await service.getUploadById('1234');
     expect(result).toEqual(mockUpload);
   });
@@ -164,14 +92,13 @@ describe('UploadService', () => {
   it('should throw NotFoundException when retrieving a non-existent upload', async () => {
     jest.spyOn(uploadModel, 'findById').mockReturnValue({
         populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(null), // Ensure this returns null
+        exec: jest.fn().mockResolvedValue(null), 
       } as any);
-    // jest.spyOn(uploadModel, 'populate').mockReturnThis();
-    // jest.spyOn(uploadModel, 'exec').mockResolvedValue(null);
 
     await expect(service.getUploadById('1234')).rejects.toThrow(NotFoundException);
   });
 
+   // Test case for updating field"processedData" for specific uploads by ID
   it('should update processed data for an upload', async () => {
     const mockUpload = { 
       _id: '1234', 
