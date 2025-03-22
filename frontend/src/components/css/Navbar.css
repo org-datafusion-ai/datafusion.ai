@@ -20,3 +20,13 @@
     padding-left: 10px;
   }
   
+  .hamburger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .hamburger-icon {
+    width: 30px;
+    height: auto;
+  }
