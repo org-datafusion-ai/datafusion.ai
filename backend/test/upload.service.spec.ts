@@ -68,10 +68,10 @@
 
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { UploadService } from './upload.service';
+import { UploadService } from '../src/uploads/upload.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Upload, UploadDocument } from './upload.schemas';
+import { Upload, UploadDocument } from '../src/uploads/upload.schemas';
 import { NotFoundException } from '@nestjs/common';
 
 describe('UploadService', () => {
