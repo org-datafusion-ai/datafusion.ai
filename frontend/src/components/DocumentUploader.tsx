@@ -58,25 +58,27 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
   
   return (
     <div>
-      <FilePond
-        files={files}
-        onupdatefiles={(fileItems) => {
-          const newFiles = fileItems.map((fileItem) => fileItem.file as File);
-          setFiles(newFiles);
-          if (onFilesUpdate) {
-            onFilesUpdate(newFiles); // Pass updated files to parent if needed
-          }
-        }}
-        name="filepond"
-        allowMultiple={true}
-        allowImagePreview={true}
-        maxFiles={3}
-        instantUpload={false} // Prevent automatic upload
-      />
-      <div className="container">
-        <button onClick={handleUpload} className="upload-button">
-          Upload & Continue
-        </button>
+      <div className="file-preview">
+        <FilePond
+          files={files}
+          onupdatefiles={(fileItems) => {
+            const newFiles = fileItems.map((fileItem) => fileItem.file as File);
+            setFiles(newFiles);
+            if (onFilesUpdate) {
+              onFilesUpdate(newFiles); // Pass updated files to parent if needed
+            }
+          }}
+          name="filepond"
+          allowMultiple={true}
+          allowImagePreview={true}
+          maxFiles={6}
+          instantUpload={false} // Prevent automatic upload
+        />
+        <div className="container">
+          <button onClick={handleUpload} className="upload-button">
+            Upload & Continue
+          </button>
+        </div>
       </div>
     </div>
   );
