@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '../config';
 
 interface RegisterData {
   username: string;
@@ -15,7 +16,7 @@ interface LogoutData {
   token: string;
 }
 
-const API_URL = 'http://localhost:5000';
+const API_URL = config.apiHost;
 
 const register = async (data: RegisterData) => {
   return axios.post(`${API_URL}/auth/register`, data);
