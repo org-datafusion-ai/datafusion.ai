@@ -13,8 +13,10 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import FilePondPluginPdfPreview from 'filepond-plugin-pdf-preview';
 import 'filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.css';
 
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+
 // Registering the Plugins
-registerPlugin(FilePondPluginImagePreview, FilePondPluginPdfPreview);
+registerPlugin(FilePondPluginImagePreview, FilePondPluginPdfPreview, FilePondPluginFileValidateSize);
 
 interface DocumentUploaderProps {
   onFilesUpdate?: (files: File[]) => void; // Optional callback to pass files up
@@ -72,7 +74,10 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
           allowMultiple={true}
           allowImagePreview={true}
           maxFiles={6}
-          instantUpload={false} // Prevent automatic upload
+          instantUpload={false}
+          maxFileSize={"5MB"}
+          labelMaxFileSizeExceeded="File is too large!"
+          labelMaxFileSize="Maximum file size is {filesize}"
         />
         <div className="container">
           <button onClick={handleUpload} className="upload-button">
