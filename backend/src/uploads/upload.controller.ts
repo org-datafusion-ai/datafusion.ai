@@ -29,7 +29,7 @@ export class UploadController {
    * @returns A success message and the created upload record.
    */
   @Post()
-  @UseInterceptors(FileInterceptor('file')) // Intercept file data using Multer.
+  @UseInterceptors(FileInterceptor('filepond')) // Intercept file data using Multer.
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const userId = 'someUserId'; // Placeholder for the user ID (to be replaced later with login integration).
     const upload = await this.uploadService.createUpload(file, userId);

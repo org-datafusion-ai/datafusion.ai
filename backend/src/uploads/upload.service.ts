@@ -12,7 +12,7 @@ export class UploadService {
 
   // Create: 新增上傳記錄
   async createUpload(file: Express.Multer.File, userId: string): Promise<UploadDocument> {
-    const newUpload = new this.uploadModel({
+    const newUpload = await this.uploadModel.create({
       id: this.generateUniqueId(file.originalname),
       title: file.originalname,
       type: file.mimetype,
