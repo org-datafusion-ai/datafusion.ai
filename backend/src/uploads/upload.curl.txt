@@ -1,0 +1,33 @@
+CRUD command for uploads
+
+* for upload a file  
+curl -X POST http://localhost:5000/uploads ^
+     -H "Content-Type: multipart/form-data" ^
+     -F "file=@C:\\testDatafusionDB.txt"
+
+curl -X POST http://localhost:5000/uploads ^
+     -H "Content-Type: multipart/form-data" ^
+     -F "file=@C:\\testWord.docx"
+
+curl -X POST http://localhost:5000/uploads ^
+     -H "Content-Type: multipart/form-data" ^
+     -F "file=@C:\\testExcel.xlsx"
+
+
+curl -X POST http://localhost:5000/uploads ^
+     -H "Content-Type: multipart/form-data" ^
+     -F "file=@C:\\project flow.png"
+
+* for Read all uploads
+curl -X GET http://localhost:5000/uploads
+
+* Read upload by upload _ID
+curl -X GET http://localhost:5000/uploads/67dab4d42c9c51764c5904d6
+
+* Update field 
+curl -X PUT http://localhost:5000/uploads/67d42def25b323b218c6b082/updateProcessedData ^
+-H "Content-Type: application/json" ^
+-d "{\"processedData\":{ \"key728\": \"value728\" }}"
+
+* Delete upload by upload _ID
+curl -X DELETE http://localhost:5000/uploads/67dec48bfa94639dd8a7c367
