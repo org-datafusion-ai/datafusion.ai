@@ -33,7 +33,7 @@ $ npm install
 ```
 
 ## Database setup
-# installation
+# installation cmd
 npm i @nestjs/mongoose mongoose  <!-- most popular MongoDB object modeling tool. -->
 npm install --save-dev @types/express @types/multer <!-- upload files -->
 npm i --save @nestjs/azure-database <!-- Azure cosmos DB  -->
@@ -62,6 +62,14 @@ DB_URI=PRIMARY CONNECTION STRING from Azure portal
 
 3. Switching Between Local and Azure
 Uncomment the block of code to use either the local or Azure MongoDB instance in app.module.ts file.
+
+## pre-process data cmd
+<!-- Encode pdf files. -->
+npm install pdf-parse
+<!-- Encode word files. -->
+npm install mammoth
+<!-- Encode Excel files. -->
+npm install xlsx 
 
 ## Compile and run the project
 
