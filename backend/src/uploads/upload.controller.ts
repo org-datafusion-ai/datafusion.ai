@@ -31,9 +31,10 @@ export class UploadController {
    * @returns A success message and the created upload record.
    */
   @Post()
-  // @UseInterceptors(FileInterceptor('file')) // Intercept file data using Multer.
+  // @UseInterceptors(FileInterceptor('filepond')) 
+  // Intercept file data using Multer.
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor('filepond', {
       fileFilter: (req, file, callback) => {
         // filter the upload files types.
         const fileExtension = path.extname(file.originalname).toLowerCase();
