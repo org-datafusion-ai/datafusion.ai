@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -11,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import * as path from 'path';
 
 @Controller('uploads')
 export class UploadController {
@@ -29,11 +31,42 @@ export class UploadController {
    * @returns A success message and the created upload record.
    */
   @Post()
-  @UseInterceptors(FileInterceptor('filepond')) // Intercept file data using Multer.
+  // @UseInterceptors(FileInterceptor('filepond')) 
+  // Intercept file data using Multer.
+  @UseInterceptors(
+    FileInterceptor('filepond', {
+      fileFilter: (req, file, callback) => {
+        // filter the upload files types.
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        console.log('File MIME type:', file.mimetype);
+        console.log('fileExtension: ' + fileExtension);
+
+        const allowedExtensions = ['.pdf', '.doc', '.docx', '.xlsx', '.txt'];
+        if (!allowedExtensions.includes(fileExtension)) {
+          return callback(
+            new Error(
+              'Unsupported file type. Please select only word, excel, pdf, txt file.',
+            ),
+            false,
+          );
+        }
+
+        callback(null, true);
+      },
+    }),
+  )
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const userId = 'someUserId'; // Placeholder for the user ID (to be replaced later with login integration).
-    const upload = await this.uploadService.createUpload(file, userId);
-    return { message: 'File uploaded successfully', upload };
+    const userId = 'someUserId'; //TODO: Placeholder for the user ID (to be replaced later with login integration).
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    const upload = await this.uploadService.createUpload(
+      file,
+      userId,
+      fileExtension,
+    );
+    return {
+      message: 'File uploaded successfully',
+      contentInStr: upload.contentInStr,
+    };
   }
 
   // ==============================

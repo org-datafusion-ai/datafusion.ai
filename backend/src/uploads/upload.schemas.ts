@@ -14,6 +14,9 @@ export class Upload {
   @Prop({ required: true })
   type: string;
 
+  @Prop({ type: String })
+  fileExtension: string;
+
   @Prop({ type: Buffer }) 
   content: Buffer;
 
