@@ -1,9 +1,12 @@
 .footer {
-    background-color: #c7f1ff;
-    color: black;
-    padding: 15px 0px 15px 0px;
-    text-align: right;
-  }
+  background-color: #c7f1ff;
+  color: white;
+  padding: 15px 0px 15px 0px;
+  color: #8c8c8c;
+  padding: 8px 0px 8px 0px;
+  text-align: right;
+}
+
   
   .footer-content {
     display: flex;

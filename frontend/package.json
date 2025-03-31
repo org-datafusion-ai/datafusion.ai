@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.4",
     "axios": "^1.8.1",
     "filepond": "^4.32.7",
+    "filepond-plugin-file-validate-size": "^2.2.8",
     "filepond-plugin-image-preview": "^4.6.12",
     "filepond-plugin-pdf-preview": "^1.0.4",
     "react": "^18.3.1",

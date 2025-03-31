@@ -1,6 +1,5 @@
 import React from 'react';
 import hamburgerMenuIcon from '../images/hamburger.png';
-import './Hamburger.css';
 
 interface HamburgerProps {
   onClick: () => void; // Callback to handle menu toggle
