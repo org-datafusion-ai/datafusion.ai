@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import DocumentUploadPage from './pages/DocumentUploadPage';
+import DownloadCSVPage from './pages/DownloadCSVPage';
 import Login from './pages/LoginPage';
 import { useAuth } from './utils/AuthContext';
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/documents" element={isAuthenticated ? <DocumentUploadPage /> : <Navigate replace to="/login" />} />
             <Route path="/" element={<Navigate replace to={isAuthenticated ? "/documents" : "/login"} />} />
+            <Route path="/download" element={<DownloadCSVPage />} />
           </Routes>
         </main>
         <footer className="footer">

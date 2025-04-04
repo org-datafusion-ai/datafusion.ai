@@ -51,7 +51,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
       }
 
       console.log("Files uploaded successfully!");
-      navigate("/next-screen"); // Navigate after successful upload
+      navigate("/download"); // Navigate after successful upload (pointed to downloads page just for testing)
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("Failed to upload files.");
@@ -74,7 +74,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
           allowMultiple={true}
           allowImagePreview={true}
           maxFiles={6}
-          instantUpload={false}
+          instantUpload={true}
           maxFileSize={"5MB"}
           labelMaxFileSizeExceeded="File is too large!"
           labelMaxFileSize="Maximum file size is {filesize}"
