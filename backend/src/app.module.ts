@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UploadModule } from './uploads/upload.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './users/user.module';
+import { CsvModule } from './csv/csv.module';
 
 // Log the DB_URI environment variable for debugging purposes before initializing Mongoose.
 // TODO: delete after testing!
@@ -30,6 +31,7 @@ console.log('DB_URI:', process.env.DB_URI);
     MongooseModule.forRoot('mongodb://localhost/datafusion'),
     UploadModule,
     AuthModule,
+    CsvModule,
   ],
 })
 export class AppModule {}
