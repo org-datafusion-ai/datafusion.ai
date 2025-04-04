@@ -1,28 +1,62 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Upload, UploadDocument } from '../uploads/upload.schemas';
-import * as json2csv from 'json2csv';
+import { UploadService } from '../uploads/upload.service';
 
 @Injectable()
 export class CsvService {
-  constructor(
-    @InjectModel(Upload.name) private readonly uploadModel: Model<UploadDocument>,
-  ) {}
+  constructor(private readonly uploadService: UploadService) {}
 
+  /**
+   * Generates a CSV string from all processed data in the uploads.
+   * @returns A CSV string with all the processed data.
+   */
   async generateCsv(): Promise<string> {
-    // Step 1: Retrieve all uploads
-    const uploads = await this.uploadModel.find().exec();
+    // Step 1: Get all uploads
+    const uploads = await this.uploadService.getAllUploads();
+    const processedData = uploads.map(upload => upload.processedData);
 
-    // Step 2: Extract processedData from each upload
-    const records = uploads.map(upload => {
-      return upload.processedData;
+    // Step 2: Extract headers (keys from all processed data)
+    const allHeaders = this.getAllHeaders(processedData);
+
+    // Step 3: Format the data into CSV format
+    return this.formatDataToCSV(processedData, allHeaders);
+  }
+
+  /**
+   * Extracts all unique headers (keys) from processed data.
+   * @param processedData - Array of processed data objects
+   * @returns Array of unique header keys
+   */
+  private getAllHeaders(processedData: any[]): string[] {
+    const allHeaders = new Set<string>();
+
+    processedData.forEach(data => {
+      Object.keys(data).forEach(header => allHeaders.add(header));
     });
 
-    // Step 3: Convert processedData (JSON) to CSV
-    const csv = json2csv.parse(records); // This assumes each processedData is an object
+    return Array.from(allHeaders);
+  }
 
-    // Step 4: Return the generated CSV as a string or save it to a file
-    return csv;
+  /**
+   * Converts the processed data to CSV format.
+   * @param processedData - Array of processed data objects
+   * @param allHeaders - Array of all unique headers
+   * @returns CSV string
+   */
+  private formatDataToCSV(processedData: any[], allHeaders: string[]): string {
+    const rows: string[] = [];
+
+    // 1. Add headers row
+    const headerRow = allHeaders.join(',');
+    rows.push(headerRow);
+
+    // 2. Add rows for each processed data
+    processedData.forEach(data => {
+      const row = allHeaders
+        .map(header => (data[header] ? `"${data[header]}"` : ''))
+        .join(',');
+      rows.push(row);
+    });
+
+    return rows.join('\n');
   }
 }

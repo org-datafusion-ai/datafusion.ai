@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^11.0.11",
     "@types/mongoose": "^5.11.96",
     "dotenv": "^16.4.7",
+    "fast-csv": "^5.0.2",
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.9.0",
