@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import './css/DocumentUploader.css';
+import config from '../config';
 
 // Image preview plugin
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -38,7 +39,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
     });
 
     try {
-      const response = await fetch("http://localhost:5000/uploads", {
+      const response = await fetch(`${config.apiHost}/uploads`, {
         method: "POST",
         body: formData,
         headers: {
