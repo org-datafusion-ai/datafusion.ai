@@ -12,12 +12,14 @@ export class CsvService {
   async generateCsv(): Promise<string> {
     // Step 1: Get all uploads
     const uploads = await this.uploadService.getAllUploads();
-    const processedData = uploads.map(upload => upload.processedData);
 
-    // Step 2: Extract headers (keys from all processed data)
+    // Step 2: Extract processedData, ensuring it's always an object
+    const processedData = uploads.map(upload => upload.processedData || {});
+
+    // Step 3: Extract headers (keys from all processed data)
     const allHeaders = this.getAllHeaders(processedData);
 
-    // Step 3: Format the data into CSV format
+    // Step 4: Format the data into CSV format
     return this.formatDataToCSV(processedData, allHeaders);
   }
 
@@ -52,7 +54,11 @@ export class CsvService {
     // 2. Add rows for each processed data
     processedData.forEach(data => {
       const row = allHeaders
-        .map(header => (data[header] ? `"${data[header]}"` : ''))
+        .map(header => {
+          // Check if the data object has the header key and handle undefined/null values
+          const value = data[header];
+          return value !== undefined && value !== null ? `"${value}"` : '';
+        })
         .join(',');
       rows.push(row);
     });

@@ -1,6 +1,6 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { CsvService } from './csv.service';
-import { Response } from 'express'; // Import Response from Express for setting headers
+import { Response } from 'express';
 
 @Controller('csv')
 export class CsvController {
@@ -9,18 +9,17 @@ export class CsvController {
   @Get('generate')
   async generateCSV(@Res() res: Response) {
     try {
-      // Step 1: Get the CSV content
       const csvString = await this.csvService.generateCsv();
 
-      // Step 2: Set headers to prompt download
+      // Set headers to prompt file download
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="generated.csv"');
 
-      // Step 3: Send the CSV data as the response
+      // Send the CSV content
       res.status(200).send(csvString);
     } catch (error) {
       console.error('Error generating CSV:', error);
-      throw error;
+      res.status(500).send('Failed to generate CSV');
     }
   }
 }
