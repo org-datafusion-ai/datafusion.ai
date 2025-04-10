@@ -17,32 +17,47 @@ export class UploadService {
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
   ) {}
-
   async createUpload(
     file: Express.Multer.File,
     userId: string,
     fileExtension: string,
   ): Promise<UploadDocument> {
     let fileContent = '';
-    if (fileExtension === '.txt') {
-      fileContent = file.buffer.toString('utf8');
-    } else if (fileExtension === '.pdf') {
-      const pdfData = await pdfParse(file.buffer);
-      fileContent = pdfData.text;
-    } else if (fileExtension === '.docx' || fileExtension === '.doc') {
-      const wordData = await mammoth.extractRawText({ buffer: file.buffer });
-      fileContent = wordData.value;
-    } else if (fileExtension === '.xlsx') {
-      const workbook = xlsx.read(file.buffer, { type: 'buffer' });
-      const allSheetData: string[] = [];
-      workbook.SheetNames.forEach((sheetName) => {
-        const worksheet = workbook.Sheets[sheetName];
-        const sheetData = xlsx.utils.sheet_to_csv(worksheet);
-        allSheetData.push(`Sheet: ${sheetName}\n${sheetData}`);
-      });
-      fileContent = allSheetData.join('\n\n');
-    } else {
-      throw new Error('Unsupported file type. Please upload a valid file.');
+
+    switch (fileExtension) {
+      case '.txt':
+        fileContent = file.buffer.toString('utf8');
+        break;
+
+      case '.pdf': {
+        const pdfData = await pdfParse(file.buffer);
+        fileContent = pdfData.text;
+        break;
+      }
+
+      case '.docx':
+      case '.doc': {
+        const wordData = await mammoth.extractRawText({ buffer: file.buffer });
+        fileContent = wordData.value;
+        break;
+      }
+
+      case '.xlsx': {
+        const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+        const allSheetData: string[] = [];
+
+        workbook.SheetNames.forEach((sheetName) => {
+          const worksheet = workbook.Sheets[sheetName];
+          const sheetData = xlsx.utils.sheet_to_csv(worksheet);
+          allSheetData.push(`Sheet: ${sheetName}\n${sheetData}`);
+        });
+
+        fileContent = allSheetData.join('\n\n');
+        break;
+      }
+
+      default:
+        throw new Error('Unsupported file type. Please upload a valid file.');
     }
 
     fileContent = this.removeExtraNewLines(fileContent);

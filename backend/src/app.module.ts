@@ -21,25 +21,6 @@ console.log('DB_URI:', process.env.DB_URI);
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Use cookie-parser globally
-    consumer.apply(cookieParser()).forRoutes('*');
-
-    // Use custom session middleware globally
     consumer.apply(SessionMiddleware).forRoutes('*');
   }
 }
-
-// // app.module.ts
-// import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-// import { SessionMiddleware } from './session.middleware'; // adjust path if needed
-
-// @Module({
-//   imports: [],
-//   controllers: [],
-//   providers: [],
-// })
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(SessionMiddleware).forRoutes('*'); // ✅ Apply to all routes
-//   }
-// }
