@@ -18,10 +18,6 @@ import * as path from 'path';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  // ==============================
-  //  File Upload Functionality
-  // ==============================
-
   /**
    * Handles file upload and creates a corresponding upload record in the database.
    * - Uses Multer to intercept the uploaded file.
@@ -69,10 +65,6 @@ export class UploadController {
     };
   }
 
-  // ==============================
-  //  Fetch Records (Read Operations)
-  // ==============================
-
   /**
    * Retrieves all upload records from the database.
    *
@@ -118,10 +110,6 @@ export class UploadController {
     );
     return { message: 'Processed data updated successfully', updatedUpload };
   }
-
-  // ==============================
-  //  Deletion Operations
-  // ==============================
 
   /**
    * Deletes a specific upload record from the database.

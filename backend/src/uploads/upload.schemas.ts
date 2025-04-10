@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type UploadDocument = HydratedDocument<Upload>;
 
-@Schema() 
+@Schema()
 export class Upload {
   @Prop({ type: String, required: true, unique: true })
   id: string;
@@ -17,25 +17,23 @@ export class Upload {
   @Prop({ type: String })
   fileExtension: string;
 
-  @Prop({ type: Buffer }) 
+  @Prop({ type: Buffer })
   content: Buffer;
 
-  @Prop({ type: String }) 
+  @Prop({ type: String })
   contentInStr: string;
 
   @Prop({ type: Date, default: Date.now })
   uploadedAt: Date;
 
-  @Prop({ type: Object }) 
+  @Prop({ type: Object })
   processedData: Record<string, any>;
 
   @Prop({ type: String, required: true })
   uploadedBy: string;
 
-  @Prop({ type: Boolean, default: false })  
-  oieLibrary: boolean; 
+  @Prop({ type: Boolean, default: false })
+  oieLibrary: boolean;
 }
 
 export const UploadSchema = SchemaFactory.createForClass(Upload);
-
-
