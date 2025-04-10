@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UploadModule } from './uploads/upload.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';  // to access .env
 import { AuthModule } from './users/user.module';
+import { AIModule } from './ai/ai.module';
 
 // Log the DB_URI environment variable for debugging purposes before initializing Mongoose.
 // TODO: delete after testing!
-console.log('DB_URI:', process.env.DB_URI);
+// console.log('DB_URI:', process.env.DB_URI);
 
 // Uncomment the following block to use the Azure MongoDB instance.
 // @Module({
@@ -19,17 +20,26 @@ console.log('DB_URI:', process.env.DB_URI);
 //     pass: process.env.DB_PASSWORD,
 //     authSource: 'admin', // Authentication source set to "admin".
 //   }),
-//     UploadModule
+//     UploadModule,
+//     AuthModule,
+//     AIModule,
 //   ],
 // })
 
-// Uncomment the following block to use the local MongoDB instance for development or testing purposes.
 
+// Uncomment the following block to use the local MongoDB instance for development or testing purposes.
+console.log('App.moudules.DB_URI:', process.env.DB_URI);
 @Module({
   imports: [
+        // Load configuration from the .env file to access environment variables.
+    // ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // 如果你希望在所有模組中都能訪問 .env
+    }),
     MongooseModule.forRoot('mongodb://localhost/datafusion'),
     UploadModule,
     AuthModule,
+    AIModule,
   ],
 })
 export class AppModule {}

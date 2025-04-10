@@ -9,12 +9,14 @@ import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
 import { UploadController } from './upload.controller';
+import { AIService } from '../ai/ai.service';
 
 
 @Injectable()
 export class UploadService {
   constructor(
-    @InjectModel(Upload.name) private readonly uploadModel: Model<UploadDocument>
+    @InjectModel(Upload.name) private readonly uploadModel: Model<UploadDocument>,
+    private readonly aiService: AIService,
   ) { }
 
   // Create upload record
@@ -72,8 +74,14 @@ export class UploadService {
     file.buffer.fill(0); // use 0 replace the content in buffer 
     file.buffer = null as any; // release memory
     
-    console.log("This is the content:" + fileContent);
+    // console.log("This is the content:" + fileContent);
     console.log("*****************************************");
+
+      // Trigger extraction after saving the upload
+  const extractedInfo = await this.aiService.extractInformation(fileContent);
+  console.log('Extracted Info:', extractedInfo);
+
+
 
     return newUpload.save(); // save the upload object into DB.
   }
