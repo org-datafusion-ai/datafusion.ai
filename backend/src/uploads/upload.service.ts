@@ -59,7 +59,9 @@ export class UploadService {
     // remove unnessary new line.
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
-    // 2. save infor into DB
+    // 2. extract the info
+    const extractedInfo = await this.aiService.extractInformation(fileContent);
+    // 3. save infor into DB
     const newUpload = new this.uploadModel({
       id: this.generateUniqueId(file.originalname),
       title: file.originalname,
@@ -67,6 +69,7 @@ export class UploadService {
       type: file.mimetype,
       content: file.buffer,
       contentInStr: fileContent,
+      processedData: extractedInfo,
       uploadedBy: userId, //TODO: Add the UserName by the frontend login ID.
     });
 
@@ -77,12 +80,8 @@ export class UploadService {
     // console.log("This is the content:" + fileContent);
     console.log("*****************************************");
 
-      // Trigger extraction after saving the upload
-  const extractedInfo = await this.aiService.extractInformation(fileContent);
-  console.log('Extracted Info:', extractedInfo);
-
-
-
+    console.log('Extracted Info:', extractedInfo);
+  
     return newUpload.save(); // save the upload object into DB.
   }
 
