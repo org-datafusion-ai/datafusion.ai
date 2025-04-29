@@ -5,64 +5,63 @@ import { UploadService } from '../uploads/upload.service';
 export class CsvService {
   constructor(private readonly uploadService: UploadService) {}
 
-  /**
-   * Generates a CSV string from all processed data in the uploads.
-   * @returns A CSV string with all the processed data.
-   */
   async generateCsv(): Promise<string> {
-    // Step 1: Get all uploads
     const uploads = await this.uploadService.getAllUploads();
+    const processedDataList = uploads.map(upload => upload.processedData || {});
 
-    // Step 2: Extract processedData, ensuring it's always an object
-    const processedData = uploads.map(upload => upload.processedData || {});
+    // Step 1: Flatten each processedData object
+    const flattenedDataList = processedDataList.map(data => this.flattenObject(data));
 
-    // Step 3: Extract headers (keys from all processed data)
-    const allHeaders = this.getAllHeaders(processedData);
+    // Step 2: Collect all unique keys (will be the vertical headers)
+    const allKeys = Array.from(
+      new Set(flattenedDataList.flatMap(obj => Object.keys(obj)))
+    );
 
-    // Step 4: Format the data into CSV format
-    return this.formatDataToCSV(processedData, allHeaders);
-  }
-
-  /**
-   * Extracts all unique headers (keys) from processed data.
-   * @param processedData - Array of processed data objects
-   * @returns Array of unique header keys
-   */
-  private getAllHeaders(processedData: any[]): string[] {
-    const allHeaders = new Set<string>();
-
-    processedData.forEach(data => {
-      Object.keys(data).forEach(header => allHeaders.add(header));
-    });
-
-    return Array.from(allHeaders);
-  }
-
-  /**
-   * Converts the processed data to CSV format.
-   * @param processedData - Array of processed data objects
-   * @param allHeaders - Array of all unique headers
-   * @returns CSV string
-   */
-  private formatDataToCSV(processedData: any[], allHeaders: string[]): string {
+    // Step 3: Build vertical CSV: first column is key, rest are values from each upload
     const rows: string[] = [];
 
-    // 1. Add headers row
-    const headerRow = allHeaders.join(',');
-    rows.push(headerRow);
-
-    // 2. Add rows for each processed data
-    processedData.forEach(data => {
-      const row = allHeaders
-        .map(header => {
-          // Check if the data object has the header key and handle undefined/null values
-          const value = data[header];
-          return value !== undefined && value !== null ? `"${value}"` : '';
-        })
-        .join(',');
-      rows.push(row);
+    allKeys.forEach(key => {
+      const row = [key];
+      flattenedDataList.forEach(data => {
+        const value = data[key];
+        row.push(value !== undefined && value !== null ? `"${value}"` : '');
+      });
+      rows.push(row.join(','));
     });
 
     return rows.join('\n');
+  }
+
+  /**
+   * Recursively flattens an object. Nested keys are represented as "parent.child" or "array[index].child".
+   */
+  private flattenObject(
+    obj: any,
+    parentKey: string = ''
+  ): Record<string, string> {
+    let result: Record<string, string> = {};
+
+    for (const key in obj) {
+      const value = obj[key];
+      const fullKey = parentKey ? `${parentKey}.${key}` : key;
+
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          if (typeof item === 'object' && item !== null) {
+            const nested = this.flattenObject(item, `${fullKey}[${index}]`);
+            result = { ...result, ...nested };
+          } else {
+            result[`${fullKey}[${index}]`] = item;
+          }
+        });
+      } else if (typeof value === 'object' && value !== null) {
+        const nested = this.flattenObject(value, fullKey);
+        result = { ...result, ...nested };
+      } else {
+        result[fullKey] = String(value);
+      }
+    }
+
+    return result;
   }
 }
