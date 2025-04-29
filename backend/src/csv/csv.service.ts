@@ -9,59 +9,76 @@ export class CsvService {
     const uploads = await this.uploadService.getAllUploads();
     const processedDataList = uploads.map(upload => upload.processedData || {});
 
-    // Step 1: Flatten each processedData object
-    const flattenedDataList = processedDataList.map(data => this.flattenObject(data));
-
-    // Step 2: Collect all unique keys (will be the vertical headers)
-    const allKeys = Array.from(
-      new Set(flattenedDataList.flatMap(obj => Object.keys(obj)))
-    );
-
-    // Step 3: Build vertical CSV: first column is key, rest are values from each upload
     const rows: string[] = [];
 
-    allKeys.forEach(key => {
-      const row = [key];
-      flattenedDataList.forEach(data => {
-        const value = data[key];
-        row.push(value !== undefined && value !== null ? `"${value}"` : '');
-      });
-      rows.push(row.join(','));
+    processedDataList.forEach((data, index) => {
+      rows.push(`Record ${index + 1}`);
+      rows.push(...this.objectToVerticalRows(data));
+      rows.push(''); // blank row between records
     });
 
     return rows.join('\n');
   }
 
   /**
-   * Recursively flattens an object. Nested keys are represented as "parent.child" or "array[index].child".
-   */
-  private flattenObject(
-    obj: any,
-    parentKey: string = ''
-  ): Record<string, string> {
-    let result: Record<string, string> = {};
+ * Converts a camelCase or dot.notation or snake_case key to a readable label.
+ * Examples:
+ *   "partnerName" => "Partner Name"
+ *   "partner.name" => "Partner Name"
+ *   "partner_name" => "Partner Name"
+ */
+private toLabel(key: string): string {
+  return key
+    .replace(/[_\.]/g, ' ') // Replace underscores and dots with spaces
+    .replace(/\[(\d+)\]/g, '') // Remove array index markers like [0]
+    .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before camelCase capitals
+    .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
+}
 
+private escapeCsv(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    // Escape inner double quotes
+    value = value.replace(/"/g, '""');
+    // Wrap in double quotes
+    return `"${value}"`;
+  }
+  return value;
+}
+
+  private objectToVerticalRows(obj: any, parentKey: string = ''): string[] {
+    const rows: string[] = [];
+  
     for (const key in obj) {
       const value = obj[key];
-      const fullKey = parentKey ? `${parentKey}.${key}` : key;
-
+      const label = this.toLabel(key);
+  
       if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          if (typeof item === 'object' && item !== null) {
-            const nested = this.flattenObject(item, `${fullKey}[${index}]`);
-            result = { ...result, ...nested };
-          } else {
-            result[`${fullKey}[${index}]`] = item;
-          }
-        });
+        if (value.length === 1 && typeof value[0] === 'object' && value[0] !== null) {
+          // Single item array — print fields directly without repeating label
+          rows.push(''); // blank line before array
+          rows.push(...this.objectToVerticalRows(value[0], label));
+        } else {
+          rows.push(''); // blank line before array
+          rows.push(label); // Section header for multiple items
+  
+          value.forEach((item, index) => {
+            if (typeof item === 'object' && item !== null) {
+              const nestedRows = this.objectToVerticalRows(item);
+              rows.push(...nestedRows, ''); // Blank line between array items
+            } else {
+              rows.push(`${label},${item}`);
+            }
+          });
+        }
       } else if (typeof value === 'object' && value !== null) {
-        const nested = this.flattenObject(value, fullKey);
-        result = { ...result, ...nested };
+        rows.push(label); // Section header
+        const nestedRows = this.objectToVerticalRows(value);
+        rows.push(...nestedRows);
       } else {
-        result[fullKey] = String(value);
+        rows.push(`${label},${value}`);
       }
     }
-
-    return result;
-  }
+  
+    return rows;
+  }  
 }
