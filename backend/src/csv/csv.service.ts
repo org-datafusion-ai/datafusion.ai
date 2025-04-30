@@ -19,66 +19,62 @@ export class CsvService {
 
     return rows.join('\n');
   }
-
-  /**
- * Converts a camelCase or dot.notation or snake_case key to a readable label.
- * Examples:
- *   "partnerName" => "Partner Name"
- *   "partner.name" => "Partner Name"
- *   "partner_name" => "Partner Name"
- */
-private toLabel(key: string): string {
-  return key
-    .replace(/[_\.]/g, ' ') // Replace underscores and dots with spaces
-    .replace(/\[(\d+)\]/g, '') // Remove array index markers like [0]
-    .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before camelCase capitals
-    .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize first letter of each word
-}
-
-private escapeCsv(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    // Escape inner double quotes
-    value = value.replace(/"/g, '""');
-    // Wrap in double quotes
-    return `"${value}"`;
+  
+  /*
+  To handle values that contain a ',' in them, because this would usually signify going into a new column.
+  */ 
+  private escapeCsv(value: string): string {
+    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      value = value.replace(/"/g, '""');
+      return `"${value}"`;
+    }
+    return value;
   }
-  return value;
-}
 
   private objectToVerticalRows(obj: any, parentKey: string = ''): string[] {
     const rows: string[] = [];
   
     for (const key in obj) {
       const value = obj[key];
-      const label = this.toLabel(key);
+      const label = key; // use raw key as-is
   
+      // If the value is an array, handle it differently
       if (Array.isArray(value)) {
+        // If the array has only one object, treat it as a single object
         if (value.length === 1 && typeof value[0] === 'object' && value[0] !== null) {
-          // Single item array — print fields directly without repeating label
-          rows.push(''); // blank line before array
+          rows.push('');
           rows.push(...this.objectToVerticalRows(value[0], label));
+        // If the value is an array of objects, treat it as a list
         } else {
-          rows.push(''); // blank line before array
-          rows.push(label); // Section header for multiple items
-  
+          // Checking if the label is the same as the parent key
+          // If it isn't, push the label to the rows
+          if (label !== parentKey) {
+            rows.push('');
+            rows.push(this.escapeCsv(label));
+          }
+          
           value.forEach((item, index) => {
+            // If the item is an object, treat it as a nested object
             if (typeof item === 'object' && item !== null) {
-              const nestedRows = this.objectToVerticalRows(item);
-              rows.push(...nestedRows, ''); // Blank line between array items
+              const nestedRows = this.objectToVerticalRows(item, label);
+              rows.push(...nestedRows, '');
             } else {
-              rows.push(`${label},${item}`);
+              rows.push(`${this.escapeCsv(label)},${this.escapeCsv(String(item))}`);
             }
           });
         }
+      // If the value is a nested object (but not an array)
       } else if (typeof value === 'object' && value !== null) {
-        rows.push(label); // Section header
-        const nestedRows = this.objectToVerticalRows(value);
+        if (label !== parentKey) {
+          rows.push(this.escapeCsv(label));
+        }
+        const nestedRows = this.objectToVerticalRows(value, label);
         rows.push(...nestedRows);
       } else {
-        rows.push(`${label},${value}`);
+        rows.push(`${this.escapeCsv(label)},${this.escapeCsv(String(value))}`);
       }
     }
-  
     return rows;
-  }  
+  }
+  
 }
