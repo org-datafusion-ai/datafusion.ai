@@ -4,6 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { ColDef, AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
+import config from '../config';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -20,7 +21,7 @@ const DownloadCSVPage: React.FC = () => {
   useEffect(() => {
     const fetchCsvPreview = async () => {
       try {
-        const response = await fetch('http://localhost:5000/csv/preview');
+        const response = await fetch(`${config.apiHost}/csv/preview`, );
         const text = await response.text();
         setCsvString(text);
       } catch (error) {

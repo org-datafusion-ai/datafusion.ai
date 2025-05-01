@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import DocumentUploadPage from './pages/DocumentUploadPage';
 import DownloadCSVPage from './pages/DownloadCSVPage';
 import config from './config';
 
-function App() {
+function AppRouter() {
+  const navigate = useNavigate();
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -22,9 +23,14 @@ function App() {
       const currentPath = window.location.pathname;
 
       
-      const targetPath = `/${data.token}/documents`;
-      if (data.token && currentPath !== targetPath) {
-        window.location.href = targetPath;
+      if (data.token) {
+        setToken(data.token);
+        const currentPath = window.location.pathname;
+        const targetPath = `/${data.token}/documents`;
+
+        if (currentPath === '/') {
+          navigate(targetPath);
+        }
       }
 
       } catch (error) {
@@ -33,11 +39,10 @@ function App() {
     };
 
     initializeSession();
-  });
+  }, [navigate]);
 
 
   return (
-    <Router>
       <div className="app-container">
         <header className="header">
           <Navbar />
@@ -46,13 +51,20 @@ function App() {
           <Routes>
             <Route path="/:sessionToken/download" element={<DownloadCSVPage />} />
             <Route path="/:sessionToken/documents" element={<DocumentUploadPage />} />
-            <Route path="/" element={<Navigate to="/:sessionToken/documents" />} />
+            <Route path="/" element={<Navigate to={`/${token}/documents`} />} />
           </Routes>
         </main>
         <footer className="footer">
           <Footer />
         </footer>
       </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRouter />
     </Router>
   );
 }
