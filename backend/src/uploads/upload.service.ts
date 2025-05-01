@@ -19,7 +19,7 @@ export class UploadService {
   ) {}
   async createUpload(
     file: Express.Multer.File,
-    userId: string,
+    sessionToken: string,
     fileExtension: string,
   ): Promise<UploadDocument> {
     let fileContent = '';
@@ -70,12 +70,13 @@ export class UploadService {
       type: file.mimetype,
       content: file.buffer,
       contentInStr: fileContent,
-      uploadedBy: userId,
+      uploadedBy: sessionToken,
     });
 
     file.buffer.fill(0);
     file.buffer = null as any;
 
+    console.log('new file', newUpload);
     console.log('This is the content:' + fileContent);
     console.log('*****************************************');
 

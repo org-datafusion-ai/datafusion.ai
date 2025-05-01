@@ -11,9 +11,22 @@ function App() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, [setIsAuthenticated]);
+    const initializeSession = async () => {
+      try {
+        // Send a simple ping to backend to trigger session cookie middleware
+        await fetch('${API_URL}/ping', {
+          method: 'GET',
+          credentials: 'include',
+        });
+  
+      } catch (error) {
+        console.error('Failed to initialize session:', error);
+      }
+    };
+  
+    initializeSession();
+  });
+  
 
   return (
     <Router>

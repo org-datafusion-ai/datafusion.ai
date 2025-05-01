@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
 import {
   Controller,
@@ -9,10 +12,14 @@ import {
   Body,
   UploadedFile,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import * as path from 'path';
+import { Request } from 'express';
+
+
 
 @Controller('api/uploads')
 export class UploadController {
@@ -27,8 +34,6 @@ export class UploadController {
    * @returns A success message and the created upload record.
    */
   @Post()
-  // @UseInterceptors(FileInterceptor('filepond')) 
-  // Intercept file data using Multer.
   @UseInterceptors(
     FileInterceptor('filepond', {
       fileFilter: (req, file, callback) => {
@@ -51,12 +56,13 @@ export class UploadController {
       },
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const userId = 'someUserId'; //TODO: Placeholder for the user ID (to be replaced later with login integration).
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request,)
+   {
+    const sessionToken = req.cookies['session_token'];
     const fileExtension = path.extname(file.originalname).toLowerCase();
     const upload = await this.uploadService.createUpload(
       file,
-      userId,
+      sessionToken,
       fileExtension,
     );
     return {
