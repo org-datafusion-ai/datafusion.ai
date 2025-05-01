@@ -20,18 +20,18 @@ function AppRouter() {
           credentials: 'include',
         });
         const data = await res.json();
-      const currentPath = window.location.pathname;
-
-      
-      if (data.token) {
-        setToken(data.token);
         const currentPath = window.location.pathname;
-        const targetPath = `/${data.token}/documents`;
 
-        if (currentPath === '/') {
-          navigate(targetPath);
+
+        if (data.token) {
+          setToken(data.token);
+          const currentPath = window.location.pathname;
+          const targetPath = `/${data.token}/documents`;
+
+          if (currentPath === '/') {
+            navigate(targetPath);
+          }
         }
-      }
 
       } catch (error) {
         console.error('Failed to initialize session:', error);
@@ -43,21 +43,24 @@ function AppRouter() {
 
 
   return (
-      <div className="app-container">
-        <header className="header">
-          <Navbar />
-        </header>
-        <main className="content">
-          <Routes>
-            <Route path="/:sessionToken/download" element={<DownloadCSVPage />} />
-            <Route path="/:sessionToken/documents" element={<DocumentUploadPage />} />
-            <Route path="/" element={<Navigate to={`/${token}/documents`} />} />
-          </Routes>
-        </main>
-        <footer className="footer">
-          <Footer />
-        </footer>
-      </div>
+    <div className="app-container">
+      <header className="header">
+        <Navbar />
+      </header>
+      <main className="content">
+        <Routes>
+          <Route path="/:sessionToken/download" element={<DownloadCSVPage />} />
+          <Route path="/:sessionToken/documents" element={<DocumentUploadPage />} />
+          <Route path="/"
+            element={
+              token ? <Navigate to={`/${token}/documents`} /> : <div>Loading...</div>
+            } />
+        </Routes>
+      </main>
+      <footer className="footer">
+        <Footer />
+      </footer>
+    </div>
   );
 }
 
