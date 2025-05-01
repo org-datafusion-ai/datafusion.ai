@@ -4,8 +4,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import DocumentUploadPage from './pages/DocumentUploadPage';
-import Login from './pages/LoginPage';
-import { useAuth } from './utils/AuthContext';
 import config from './config';
 
 function App() {
@@ -27,7 +25,7 @@ function App() {
       if (data.token && currentPath !== targetPath) {
         window.location.href = targetPath;
       }
-      
+
       } catch (error) {
         console.error('Failed to initialize session:', error);
       }
