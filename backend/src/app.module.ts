@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UploadModule } from './uploads/upload.module';
 import { ConfigModule } from '@nestjs/config';
+import { CsvModule } from './csv/csv.module';
 import { FrontendModule } from './frontend/frontend.module';
 import { SessionMiddleware } from './sessionManagement/session.middleware';
 import { SessionController } from './sessionManagement/session.controller';
@@ -16,6 +17,7 @@ console.log('DB_URI:', process.env.DB_URI);
     // Connect to the MongoDB instance using environment variables for credentials and settings.
     MongooseModule.forRoot(process.env.DB_URI || '', {}),
     UploadModule,
+    CsvModule,
     FrontendModule,
   ],
   controllers: [SessionController],

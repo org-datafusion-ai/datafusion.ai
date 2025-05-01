@@ -77,7 +77,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
           allowMultiple={true}
           allowImagePreview={true}
           maxFiles={6}
-          instantUpload={false}
+          instantUpload={true}
           maxFileSize={"5MB"}
           labelMaxFileSizeExceeded="File is too large!"
           labelMaxFileSize="Maximum file size is {filesize}"
