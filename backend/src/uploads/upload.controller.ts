@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
 import {
   Controller,
@@ -9,18 +12,18 @@ import {
   Body,
   UploadedFile,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import * as path from 'path';
+import { Request } from 'express';
+
+
 
 @Controller('api/uploads')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
-
-  // ==============================
-  //  File Upload Functionality
-  // ==============================
 
   /**
    * Handles file upload and creates a corresponding upload record in the database.
@@ -31,8 +34,6 @@ export class UploadController {
    * @returns A success message and the created upload record.
    */
   @Post()
-  // @UseInterceptors(FileInterceptor('filepond')) 
-  // Intercept file data using Multer.
   @UseInterceptors(
     FileInterceptor('filepond', {
       fileFilter: (req, file, callback) => {
@@ -55,12 +56,13 @@ export class UploadController {
       },
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const userId = 'someUserId'; //TODO: Placeholder for the user ID (to be replaced later with login integration).
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request,)
+   {
+    const sessionToken = req.cookies['session_token'];
     const fileExtension = path.extname(file.originalname).toLowerCase();
     const upload = await this.uploadService.createUpload(
       file,
-      userId,
+      sessionToken,
       fileExtension,
     );
     return {
@@ -68,10 +70,6 @@ export class UploadController {
       contentInStr: upload.contentInStr,
     };
   }
-
-  // ==============================
-  //  Fetch Records (Read Operations)
-  // ==============================
 
   /**
    * Retrieves all upload records from the database.
@@ -118,10 +116,6 @@ export class UploadController {
     );
     return { message: 'Processed data updated successfully', updatedUpload };
   }
-
-  // ==============================
-  //  Deletion Operations
-  // ==============================
 
   /**
    * Deletes a specific upload record from the database.
