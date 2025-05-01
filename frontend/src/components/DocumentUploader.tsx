@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import './css/DocumentUploader.css';
@@ -24,6 +24,8 @@ interface DocumentUploaderProps {
 }
 
 const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) => {
+  const { sessionToken } = useParams();
+  
   const [files, setFiles] = useState<File[]>([]);
   const navigate = useNavigate();
 
@@ -52,7 +54,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
       }
 
       console.log("Files uploaded successfully!");
-      navigate("/next-screen"); // Navigate after successful upload
+      navigate(`/${sessionToken}/next-screen`); // Navigate after successful upload
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("Failed to upload files.");

@@ -16,7 +16,7 @@ export class SessionMiddleware implements NestMiddleware {
       const newToken = uuidv4();
       res.cookie(COOKIE_NAME, newToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24, // 1 day
       });
