@@ -7,14 +7,13 @@ import { Upload, UploadSchema } from './upload.schemas';
 @Module({
   imports: [
     MongooseModule.forFeature([
-    { name: Upload.name, schema: UploadSchema }
-    //** 
-    // URL: https://datafusion-ai-server.mongo.cosmos.azure.com:443/
-    // */ 
-
-  ])
-],
+      { name: Upload.name, schema: UploadSchema },
+      //**
+      // URL: https://datafusion-ai-server.mongo.cosmos.azure.com:443/
+      // */
+    ]),
+  ],
   controllers: [UploadController],
-  providers: [UploadService]
+  providers: [UploadService],
 })
 export class UploadModule {}

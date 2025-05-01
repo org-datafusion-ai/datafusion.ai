@@ -1,28 +1,54 @@
 version: '3.8'
 
 services:
-  backend:
-    build: .
-    container_name: datafusion-backend
-    ports:
-      - "5000:5000"
-    environment:
-      MONGODB_URI: mongodb://mongo:27017/
-      PORT: 5000
-    depends_on:
-      - mongo
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run start:dev
-
-  mongo:
-    image: mongo
-    container_name: mongo
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
     ports:
       - "27017:27017"
+    command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
       - mongo-data:/data/db
-
+    restart: always
+  mongo-init:
+    image: mongo:6.0
+    depends_on:
+      - mongodb
+    entrypoint: >
+      bash -c "
+        echo 'Waiting for MongoDB to be ready...' &&
+        sleep 5 &&
+        mongosh --host mongodb --eval '
+          try {
+            rs.initiate({
+              _id: \"rs0\",
+              members: [{ _id: 0, host: \"mongodb:27017\" }]
+            });
+          } catch(e) { print(e); }
+          sleep(1000);
+          db.getSiblingDB(\"admin\").createUser({
+            user: \"mongoadmin\",
+            pwd: \"secret\",
+            roles: [{ role: \"root\", db: \"admin\" }]
+          });
+        '
+      "
+    restart: "no"
+  backend:
+    build:
+      args:
+        - REACT_APP_API_HOST=http://localhost/api
+      context: ./
+    image: datafusion.azurecr.io/datafusionai:latest
+    ports:
+      - "80:80"
+    environment:
+      - PORT=80
+      - DB_URI=mongodb://mongoadmin:secret@mongodb:27017/mydb?replicaSet=rs0&authSource=admin
+      - CORS=http://localhost
+      - JWT_SECRET='d80089784f12481d7df7726dd8c7245c3c75b58de06da2817f26adda024950fb'
+    depends_on:
+      - mongo-init
+    restart: always
 volumes:
   mongo-data:

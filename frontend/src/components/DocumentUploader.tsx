@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import './css/DocumentUploader.css';
+import config from '../config';
 
 // Image preview plugin
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -23,6 +24,8 @@ interface DocumentUploaderProps {
 }
 
 const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) => {
+  const { sessionToken } = useParams();
+  
   const [files, setFiles] = useState<File[]>([]);
   const navigate = useNavigate();
 
@@ -38,7 +41,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
     });
 
     try {
-      const response = await fetch("http://localhost:5000/uploads", {
+      const response = await fetch(`${config.apiHost}/uploads`, {
         method: "POST",
         body: formData,
         headers: {
@@ -51,7 +54,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
       }
 
       console.log("Files uploaded successfully!");
-      navigate("/download"); // Navigate after successful upload (pointed to downloads page just for testing)
+      navigate(`/${sessionToken}/next-screen`); // Navigate after successful upload
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("Failed to upload files.");
