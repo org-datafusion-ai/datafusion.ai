@@ -1,6 +1,6 @@
 // Sidebar.tsx
 import React from 'react';
-import './Sidebar.css';
+import './css/Sidebar.css';
 
 interface SidebarProps {
   isOpen: boolean;  // Whether the sidebar is open or not

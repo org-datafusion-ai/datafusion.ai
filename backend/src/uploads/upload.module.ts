@@ -17,6 +17,6 @@ import { AIModule } from '../ai/ai.module';
   AIModule
 ],
   controllers: [UploadController],
-  providers: [UploadService]
+  providers: [UploadService],
 })
 export class UploadModule {}

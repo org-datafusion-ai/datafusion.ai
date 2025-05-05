@@ -1,17 +1,16 @@
 .navbar {
     background-color: #c7f1ff;
     color: white;
-    padding: 15px 0px 15px 0px;
+    padding: 15px 15px 15px 15px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
     color: black;
   }
   
   .navbar-content {
     display: flex;
+    align-items: center; /* Centers items vertically */
     justify-content: space-between; /* Ensures separation */
     width: 100%; /* Full width to utilize the space */
-    align-items: center; /* Centers items vertically */
-    margin: 0 20px;
   }
   
   .app-name {
@@ -20,3 +19,13 @@
     padding-left: 10px;
   }
   
+  .hamburger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .hamburger-icon {
+    width: 30px;
+    height: auto;
+  }

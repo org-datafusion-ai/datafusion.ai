@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+const cookieParser = require('cookie-parser');
 
 // TODO: Delete later.
 import { AIService } from './ai/ai.service'; // Import AIService
@@ -7,12 +11,15 @@ import { AIService } from './ai/ai.service'; // Import AIService
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
 
   app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true, // if you're using cookies/auth headers
+    origin: process.env.CORS ?? 'http://localhost"',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
-  
+
   const port = process.env.PORT ?? 5000;
   await app.listen(port);
   app.enableCors();
