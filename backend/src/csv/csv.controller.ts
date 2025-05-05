@@ -2,7 +2,7 @@ import { Controller, Get, Res } from '@nestjs/common';
 import { CsvService } from './csv.service';
 import { Response } from 'express';
 
-@Controller('csv')
+@Controller('api/csv')
 export class CsvController {
   constructor(private readonly csvService: CsvService) {}
 

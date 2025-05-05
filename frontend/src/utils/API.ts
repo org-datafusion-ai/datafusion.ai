@@ -1,5 +1,6 @@
 import axios from 'axios';
-const backendUrl = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
+import config from '../config';
+
 
 export const API = () => {
     // Component logic here
@@ -7,7 +8,7 @@ export const API = () => {
 
 export const downloadCSV = async () => {
     try {
-      const response = await fetch(`${backendUrl}/csv/generate`, {
+      const response = await fetch(`${config.apiHost}/csv/generate`, {
         method: 'GET',
       });
   

@@ -15,15 +15,13 @@ console.log('DB_URI:', process.env.DB_URI);
   imports: [
     // Load configuration from the .env file to access environment variables.
     ConfigModule.forRoot({
-      isGlobal: true, // 如果你希望在所有模組中都能訪問 .env
+      isGlobal: true,
     }),
     // Connect to the MongoDB instance using environment variables for credentials and settings.
-    // MongooseModule.forRoot(process.env.DB_URI || '', {
-    // user: process.env.DB_USERNAME,
-    // pass: process.env.DB_PASSWORD,
-    // authSource: 'admin', // Authentication source set to "admin".
-    // Connect to the MongoDB instance using environment variables for credentials and settings.
-    MongooseModule.forRoot(process.env.DB_URI || '', {}), // Might have to change this to use the connection string directly.
+    MongooseModule.forRoot(process.env.DB_URI || '', {   
+      user: process.env.DB_USERNAME,
+      pass: process.env.DB_PASSWORD,
+      authSource: 'admin',}), // Might have to change this to use the connection string directly.
     UploadModule,
     CsvModule,
     FrontendModule,
