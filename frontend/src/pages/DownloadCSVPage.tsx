@@ -64,6 +64,22 @@ const DownloadCSVPage: React.FC = () => {
     }
   };
 
+  const handleNewSession = async () => {
+    try {
+      const response = await fetch(`${config.apiHost}/session/new`, {
+        method: 'GET',
+        credentials: 'include', 
+      });
+  
+      const data = await response.json();
+      console.log('New session token:', data.token);
+      window.location.href = `/${data.token}/documents`;
+    } catch (error) {
+      console.error('Failed to create new session:', error);
+    }
+  };
+  
+
   return (
     <div>
       <h1>Download CSV Page</h1>
@@ -74,6 +90,10 @@ const DownloadCSVPage: React.FC = () => {
       <button onClick={handleDownload} className="upload-button">
         Download CSV
       </button>
+
+      <button onClick={handleNewSession} className="upload-button" style={{ marginLeft: '10px' }}>
+  Analyse Documents Again
+</button>
     </div>
   );
 };

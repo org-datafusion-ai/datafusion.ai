@@ -54,7 +54,7 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({ onFilesUpdate }) =>
       }
 
       console.log("Files uploaded successfully!");
-      navigate(`/${sessionToken}/next-screen`); // Navigate after successful upload
+      navigate(`/${sessionToken}/download`); // Navigate after successful upload
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("Failed to upload files.");

@@ -5,9 +5,11 @@ import { UploadService } from '../uploads/upload.service';
 export class CsvService {
   constructor(private readonly uploadService: UploadService) {}
 
-  async generateCsv(): Promise<string> {
-    const uploads = await this.uploadService.getAllUploads();
-    const processedDataList = uploads.map(upload => upload.processedData || {});
+  async generateCsv(sessionToken: string): Promise<string> {
+    const uploads = await this.uploadService.getUploadBySession(sessionToken);
+    const processedDataList = Array.isArray(uploads)
+      ? uploads.map(upload => upload.processedData || {})
+      : [uploads.processedData || {}];
 
     const rows: string[] = [];
 

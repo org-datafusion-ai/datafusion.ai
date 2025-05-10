@@ -1,6 +1,6 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { CsvService } from './csv.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('api/csv')
 export class CsvController {
@@ -8,15 +8,17 @@ export class CsvController {
 
   // 1. Serve CSV as a string (for frontend preview)
   @Get('preview')
-  async previewCsv(): Promise<string> {
-    return this.csvService.generateCsv();
+  async previewCsv(@Req() req: Request): Promise<string> {
+    const sessionToken = req.cookies['session_token'];
+    return this.csvService.generateCsv(sessionToken);
   }
 
   // 2. Prompt browser to download the CSV
   @Get('generate')
-  async generateCsvDownload(@Res() res: Response) {
+  async generateCsvDownload(@Req() req: Request, @Res() res: Response) {
     try {
-      const csvString = await this.csvService.generateCsv();
+      const sessionToken = req.cookies['session_token'];
+      const csvString = await this.csvService.generateCsv(sessionToken);
 
       // Set headers to prompt file download
       res.setHeader('Content-Type', 'text/csv');

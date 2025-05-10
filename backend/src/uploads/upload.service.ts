@@ -107,6 +107,19 @@ export class UploadService {
     return upload;
   }
 
+  async getUploadBySession(sessionToken: string): Promise<UploadDocument> {
+    const upload = await this.uploadModel
+      .findOne({uploadedBy: sessionToken })
+      .exec();
+  
+    if (!upload) {
+      throw new NotFoundException(`Upload not found for this session`);
+    }
+  
+    return upload;
+  }
+  
+
   async updateProcessedData(
     uploadId: string,
     processedData: Record<string, any>,
