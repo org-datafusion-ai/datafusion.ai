@@ -7,9 +7,7 @@ export class CsvService {
 
   async generateCsv(sessionToken: string): Promise<string> {
     const uploads = await this.uploadService.getUploadBySession(sessionToken);
-    const processedDataList = Array.isArray(uploads)
-      ? uploads.map(upload => upload.processedData || {})
-      : [uploads.processedData || {}];
+    const processedDataList = uploads.map(upload => upload.processedData || {});
 
     const rows: string[] = [];
 

@@ -18,9 +18,6 @@ const Navbar: React.FC = () => {
     <div>
       <nav className="navbar">
         <div className="navbar-content">
-          {/* Include the Hamburger component */}
-          <Hamburger onClick={handleMenuToggle} />
-          {/* App Name */}
           <div className="app-name">DataFusion.AI</div>
         </div>
       </nav>

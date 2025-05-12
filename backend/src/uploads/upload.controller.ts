@@ -10,11 +10,11 @@ import {
   Delete,
   Param,
   Body,
-  UploadedFile,
   UseInterceptors,
   Req,
+  UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import * as path from 'path';
 import { Request } from 'express';
@@ -35,7 +35,7 @@ export class UploadController {
    */
   @Post()
   @UseInterceptors(
-    FileInterceptor('filepond', {
+    FilesInterceptor('filepond', 6, {
       fileFilter: (req, file, callback) => {
         // filter the upload files types.
         const fileExtension = path.extname(file.originalname).toLowerCase();
@@ -56,18 +56,27 @@ export class UploadController {
       },
     }),
   )
-  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request,)
+  async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,)
    {
     const sessionToken = req.cookies['session_token'];
-    const fileExtension = path.extname(file.originalname).toLowerCase();
-    const upload = await this.uploadService.createUpload(
-      file,
-      sessionToken,
-      fileExtension,
-    );
+    const uploadResults: { filename: string; contentInStr: string }[] = [];
+
+
+    for (const file of files) {
+      const fileExtension = path.extname(file.originalname).toLowerCase();
+      const upload = await this.uploadService.createUpload(
+        file,
+        sessionToken,
+        fileExtension,
+      );
+      uploadResults.push({
+        filename: file.originalname,
+        contentInStr: upload.contentInStr,
+      });
+    }
     return {
       message: 'File uploaded successfully',
-      contentInStr: upload.contentInStr,
+      contentInStr: uploadResults,
     };
   }
 

@@ -24,7 +24,11 @@ COPY --from=backend /app/dist ./dist
 ENV DB_URI='mongodb://localhost/datafusion'
 ENV PORT=80
 ENV CORS='http://localhost'
-ENV JWT_SECRET='d80089784f12481d7df7726dd8c7245c3c75b58de06da2817f26adda024950fb'
+ENV DB_USERNAME=''
+ENV DB_PASSWORD=''
+ENV DB_URI=''
+ENV AZURE_GPT4_API_KEY=''
+ENV AZURE_GPT4_ENDPOINT=''
 
 EXPOSE $PORT
 CMD ["node", "dist/main"]

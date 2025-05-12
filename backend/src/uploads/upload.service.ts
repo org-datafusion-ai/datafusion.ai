@@ -20,7 +20,7 @@ export class UploadService {
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
     private readonly aiService: AIService,
-  ) {}
+  ) { }
   async createUpload(
     file: Express.Multer.File,
     sessionToken: string,
@@ -74,21 +74,21 @@ export class UploadService {
       title: file.originalname,
       fileExtension: fileExtension,
       type: file.mimetype,
-      content: file.buffer,
+      //content: file.buffer,
       contentInStr: fileContent,
       processedData: extractedInfo,
       uploadedBy: sessionToken,
     });
 
-      // **Release file.buffer**
+    // **Release file.buffer**
     file.buffer.fill(0); // use 0 replace the content in buffer 
     file.buffer = null as any; // release memory
-    
-    // console.log("This is the content:" + fileContent);
+
+    console.log("This is the content:" + fileContent);
     console.log("*****************************************");
 
     console.log('Extracted Info:', extractedInfo);
-  
+
     return newUpload.save(); // save the upload object into DB.
   }
 
@@ -107,18 +107,18 @@ export class UploadService {
     return upload;
   }
 
-  async getUploadBySession(sessionToken: string): Promise<UploadDocument> {
-    const upload = await this.uploadModel
-      .findOne({uploadedBy: sessionToken })
+  async getUploadBySession(sessionToken: string): Promise<UploadDocument[]> {
+    const uploads = await this.uploadModel
+      .find({ uploadedBy: sessionToken })
       .exec();
-  
-    if (!upload) {
-      throw new NotFoundException(`Upload not found for this session`);
+
+    if (!uploads || uploads.length === 0) {
+      throw new NotFoundException(`No uploads found for this session`);
     }
-  
-    return upload;
+
+    return uploads;
   }
-  
+
 
   async updateProcessedData(
     uploadId: string,
