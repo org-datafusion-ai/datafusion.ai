@@ -46,10 +46,10 @@ services:
       - PORT=80
       - CORS=http://localhost
       - DB_USERNAME=datafusion-ai-server
-      - DB_PASSWORD=
-      - DB_URI=
-      - AZURE_GPT4_API_KEY=
-      - AZURE_GPT4_ENDPOINT=
+      - DB_PASSWORD=1TMasUjfJY4TLhfR02qYAyrkoqjJzqawdrftNcP4XZaCsnVcKnmEFldCjw9eO7IViYMmJPPtqNQCACDbVV3YEw==
+      - DB_URI=mongodb://datafusion-ai-server:1TMasUjfJY4TLhfR02qYAyrkoqjJzqawdrftNcP4XZaCsnVcKnmEFldCjw9eO7IViYMmJPPtqNQCACDbVV3YEw==@datafusion-ai-server.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@datafusion-ai-server@
+      - AZURE_GPT4_API_KEY=2PrSbQHtocJyOLuhGdUupM1IOaQbPVpdLoxkNAyHhaZGxFiPxKahJQQJ99BCACL93NaXJ3w3AAABACOGxAcf
+      - AZURE_GPT4_ENDPOINT=https://datafusion-azureopenai.openai.azure.com/
       - mongo-init
     restart: always
 volumes:
