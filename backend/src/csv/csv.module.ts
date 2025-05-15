@@ -9,7 +9,7 @@ import { AIModule } from 'src/ai/ai.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Upload.name, schema: UploadSchema }]), // Explicitly register Upload schema
+    MongooseModule.forFeature([{ name: Upload.name, schema: UploadSchema }]),
     UploadModule,
     AIModule
   ],

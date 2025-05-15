@@ -1,6 +1,0 @@
-// Encode pdf files.
-npm install pdf-parse
-// Encode word files.
-npm install mammoth
-// Encode Excel files.
-npm install xlsx 

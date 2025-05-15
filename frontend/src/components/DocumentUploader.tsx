@@ -14,12 +14,12 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 // @ts-ignore
 import FilePondPluginPdfPreview from "filepond-plugin-pdf-preview";
 import "filepond-plugin-pdf-preview/dist/filepond-plugin-pdf-preview.css";
-
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Registering the Plugins
+
 registerPlugin(
   FilePondPluginImagePreview,
   FilePondPluginPdfPreview,
@@ -96,10 +96,10 @@ const DocumentUploader: React.FC<DocumentUploaderProps> = ({
           onupdatefiles={(fileItems) => {
             const newFiles = fileItems
               .map((fileItem) => fileItem.file)
-              .filter((f): f is File => !!f); // Ensure not null
+              .filter((f): f is File => !!f);
             setFiles(newFiles);
             if (onFilesUpdate) {
-              onFilesUpdate(newFiles); // Pass updated files to parent if needed
+              onFilesUpdate(newFiles); 
             }
           }}
           name="filepond"
