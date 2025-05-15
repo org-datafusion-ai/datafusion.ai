@@ -5,8 +5,8 @@
 // export class CsvService {
 //   constructor(private readonly uploadService: UploadService) {}
 
-//   async generateCsv(): Promise<string> {
-//     const uploads = await this.uploadService.getAllUploads();
+//   async generateCsv(sessionToken: string): Promise<string> {
+//     const uploads = await this.uploadService.getUploadBySession(sessionToken);
 //     const processedDataList = uploads.map(upload => upload.processedData || {});
 
 //     const rows: string[] = [];
