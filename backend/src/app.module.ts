@@ -6,19 +6,22 @@ import { CsvModule } from './csv/csv.module';
 import { FrontendModule } from './frontend/frontend.module';
 import { SessionMiddleware } from './sessionManagement/session.middleware';
 import { SessionController } from './sessionManagement/session.controller';
-
-// Log the DB_URI environment variable for debugging purposes before initializing Mongoose.
-console.log('DB_URI:', process.env.DB_URI);
+import { AIModule } from './ai/ai.module';
 
 @Module({
   imports: [
-    // Load configuration from the .env file to access environment variables.
-    ConfigModule.forRoot(),
-    // Connect to the MongoDB instance using environment variables for credentials and settings.
-    MongooseModule.forRoot(process.env.DB_URI || '', {}),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.DB_URI || '', {
+      user: process.env.DB_USERNAME,
+      pass: process.env.DB_PASSWORD,
+      authSource: 'admin',
+    }),
     UploadModule,
     CsvModule,
     FrontendModule,
+    AIModule,
   ],
   controllers: [SessionController],
 })

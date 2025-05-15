@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import DocumentUploadPage from './pages/DocumentUploadPage';
 import DownloadCSVPage from './pages/DownloadCSVPage';
 import config from './config';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppRouter() {
   const navigate = useNavigate();
@@ -13,33 +15,30 @@ function AppRouter() {
 
   useEffect(() => {
     const initializeSession = async () => {
+      const currentPath = window.location.pathname;
+
+      if (currentPath !== '/') return;
+  
       try {
-        // Send a simple ping to backend to trigger session cookie middleware
-        const res = await fetch(`${config.apiHost}/session`, {
+        const res = await fetch(`${config.apiHost}/session/new`, {
           method: 'GET',
           credentials: 'include',
         });
+  
         const data = await res.json();
-        const currentPath = window.location.pathname;
-
-
+  
         if (data.token) {
           setToken(data.token);
-          const currentPath = window.location.pathname;
-          const targetPath = `/${data.token}/documents`;
-
-          if (currentPath === '/') {
-            navigate(targetPath);
-          }
+          navigate(`/${data.token}/documents`);
         }
-
+  
       } catch (error) {
         console.error('Failed to initialize session:', error);
       }
     };
-
+  
     initializeSession();
-  }, [navigate]);
+  }, [navigate]);  
 
 
   return (
@@ -68,6 +67,18 @@ function App() {
   return (
     <Router>
       <AppRouter />
+      <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Router>
   );
 }

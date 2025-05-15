@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 const cookieParser = require('cookie-parser');
@@ -19,6 +16,6 @@ async function bootstrap() {
   const port = process.env.PORT ?? 5000;
   await app.listen(port);
   app.enableCors();
-  console.log(`Application is running on: http://localhost:${port}`);
+
 }
 void bootstrap();

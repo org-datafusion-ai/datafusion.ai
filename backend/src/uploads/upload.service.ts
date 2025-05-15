@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -10,13 +6,16 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
+import { AIService } from '../ai/ai.service';
+
 
 @Injectable()
 export class UploadService {
   constructor(
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
-  ) {}
+    private readonly aiService: AIService,
+  ) { }
   async createUpload(
     file: Express.Multer.File,
     sessionToken: string,
@@ -63,22 +62,21 @@ export class UploadService {
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
 
+    const extractedInfo = await this.aiService.extractInformation(fileContent);
+
     const newUpload = new this.uploadModel({
       id: this.generateUniqueId(file.originalname),
       title: file.originalname,
       fileExtension: fileExtension,
       type: file.mimetype,
-      content: file.buffer,
+      //content: file.buffer,
       contentInStr: fileContent,
+      processedData: extractedInfo,
       uploadedBy: sessionToken,
     });
 
-    file.buffer.fill(0);
-    file.buffer = null as any;
-
-    console.log('new file', newUpload);
-    console.log('This is the content:' + fileContent);
-    console.log('*****************************************');
+    file.buffer.fill(0); 
+    file.buffer = null as any; 
 
     return newUpload.save();
   }
@@ -96,6 +94,18 @@ export class UploadService {
       throw new NotFoundException(`Upload with ID "${uploadId}" not found`);
     }
     return upload;
+  }
+
+  async getUploadBySession(sessionToken: string): Promise<UploadDocument[]> {
+    const uploads = await this.uploadModel
+      .find({ uploadedBy: sessionToken })
+      .exec();
+
+    if (!uploads || uploads.length === 0) {
+      throw new NotFoundException(`No uploads found for this session`);
+    }
+
+    return uploads;
   }
 
   async updateProcessedData(

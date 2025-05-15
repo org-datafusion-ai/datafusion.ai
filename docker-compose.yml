@@ -44,10 +44,12 @@ services:
       - "80:80"
     environment:
       - PORT=80
-      - DB_URI=mongodb://mongoadmin:secret@mongodb:27017/mydb?replicaSet=rs0&authSource=admin
       - CORS=http://localhost
-      - JWT_SECRET='d80089784f12481d7df7726dd8c7245c3c75b58de06da2817f26adda024950fb'
-    depends_on:
+      - DB_USERNAME=datafusion-ai-server
+      - DB_PASSWORD=
+      - DB_URI=
+      - AZURE_GPT4_API_KEY=
+      - AZURE_GPT4_ENDPOINT=
       - mongo-init
     restart: always
 volumes:
