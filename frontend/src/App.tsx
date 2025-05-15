@@ -22,6 +22,8 @@ function AppRouter() {
           credentials: 'include',
         });
         const data = await res.json();
+        const currentPath = window.location.pathname;
+
 
         if (data.token) {
           setToken(data.token);
