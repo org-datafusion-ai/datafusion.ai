@@ -1,13 +1,10 @@
-.filepond-container {
-
-}
 
 .filepond--root {
-    width: 100%; /* Full width, adjust as needed */
+    width: 100%;
 }
   
 .filepond--drop-label {
-    font-size: 1.5rem; /* Optional: make the text larger */
+    font-size: 1.5rem;
 }
 
 .filepond--item {

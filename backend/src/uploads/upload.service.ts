@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -10,7 +6,6 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
-import { UploadController } from './upload.controller';
 import { AIService } from '../ai/ai.service';
 
 
@@ -66,9 +61,9 @@ export class UploadService {
 
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
-    // 2. extract the info
+
     const extractedInfo = await this.aiService.extractInformation(fileContent);
-    // 3. save infor into DB
+
     const newUpload = new this.uploadModel({
       id: this.generateUniqueId(file.originalname),
       title: file.originalname,
@@ -80,16 +75,10 @@ export class UploadService {
       uploadedBy: sessionToken,
     });
 
-    // **Release file.buffer**
-    file.buffer.fill(0); // use 0 replace the content in buffer 
-    file.buffer = null as any; // release memory
+    file.buffer.fill(0); 
+    file.buffer = null as any; 
 
-    console.log("This is the content:" + fileContent);
-    console.log("*****************************************");
-
-    console.log('Extracted Info:', extractedInfo);
-
-    return newUpload.save(); // save the upload object into DB.
+    return newUpload.save();
   }
 
   async getAllUploads(): Promise<UploadDocument[]> {
@@ -118,7 +107,6 @@ export class UploadService {
 
     return uploads;
   }
-
 
   async updateProcessedData(
     uploadId: string,
