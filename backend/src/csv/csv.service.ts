@@ -9,7 +9,7 @@ export class CsvService {
     const uploads = await this.uploadService.getUploadBySession(sessionToken);
     const processedDataList = uploads.map(u => u.processedData || {});
   
-    const headerMap: Map<string, string[]> = new Map(); // key → array of values
+    const headerMap: Map<string, string[]> = new Map(); // key => array of values
   
     // Flatten each upload and collect values
     for (const data of processedDataList) {
