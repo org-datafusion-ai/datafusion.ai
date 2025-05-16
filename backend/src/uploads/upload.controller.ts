@@ -42,7 +42,7 @@ export class UploadController {
         console.log('File MIME type:', file.mimetype);
         console.log('fileExtension: ' + fileExtension);
 
-        const allowedExtensions = ['.pdf', '.doc', '.docx', '.xlsx', '.txt'];
+        const allowedExtensions = ['.pdf', '.doc', '.docx', '.xlsx', '.txt', '.csv', '.xls'];
         if (!allowedExtensions.includes(fileExtension)) {
           return callback(
             new Error(
@@ -59,26 +59,51 @@ export class UploadController {
   async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,)
    {
     const sessionToken = req.cookies['session_token'];
-    const uploadResults: { filename: string; contentInStr: string }[] = [];
-
-
-    for (const file of files) {
-      const fileExtension = path.extname(file.originalname).toLowerCase();
-      const upload = await this.uploadService.createUpload(
-        file,
-        sessionToken,
-        fileExtension,
-      );
-      uploadResults.push({
-        filename: file.originalname,
-        contentInStr: upload.contentInStr,
-      });
-    }
+   
+    const uploadResults = await Promise.all(
+      files.map(async (file) => {
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const result = await this.uploadService.createUpload(
+          file,
+          sessionToken,
+          fileExtension,
+        );
+        return {
+          filename: file.originalname,
+          contentInStr: result.contentInStr,
+        };
+      }),
+    );
     return {
       message: 'File uploaded successfully',
       contentInStr: uploadResults,
     };
   }
+
+
+  //   async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,)
+  //  {
+  //   const sessionToken = req.cookies['session_token'];
+  //   const uploadResults: { filename: string; contentInStr: string }[] = [];
+
+
+  //   for (const file of files) {
+  //     const fileExtension = path.extname(file.originalname).toLowerCase();
+  //     const upload = await this.uploadService.createUpload(
+  //       file,
+  //       sessionToken,
+  //       fileExtension,
+  //     );
+  //     uploadResults.push({
+  //       filename: file.originalname,
+  //       contentInStr: upload.contentInStr,
+  //     });
+  //   }
+  //   return {
+  //     message: 'File uploaded successfully',
+  //     contentInStr: uploadResults,
+  //   };
+  // }
 
   /**
    * Retrieves all upload records from the database.

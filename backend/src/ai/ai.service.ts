@@ -42,7 +42,7 @@ export class AIService {
           content: buildPrompt(fileContent),
         }
       ],
-      max_tokens: 1000,
+      max_tokens: 3000,  // change the numbers of the return tokens
       temperature: 0.7,
     };
 
