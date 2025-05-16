@@ -7,7 +7,7 @@ import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
 import { UploadController } from './upload.controller';
-import { AIService } from '../ai/ai.service'
+import { AIService } from '../ai/ai.service';
 
 @Injectable()
 export class UploadService {
@@ -16,7 +16,8 @@ export class UploadService {
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
     private readonly aiService: AIService,
-  ) { }
+  ) {}
+
   async createUpload(
     file: Express.Multer.File,
     sessionToken: string,
@@ -42,20 +43,48 @@ export class UploadService {
         break;
       }
 
+      case '.csv':
+      case '.xls':
       case '.xlsx': {
         const workbook = xlsx.read(file.buffer, { type: 'buffer' });
         const allSheetData: string[] = [];
 
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
-          const sheetData = xlsx.utils.sheet_to_csv(worksheet);
-          allSheetData.push(`Sheet: ${sheetName}\n${sheetData}`);
+          const csv = xlsx.utils.sheet_to_csv(worksheet);
+          const lines = csv.split('\n');
+          const filteredLines: string[] = [];
+
+          lines.forEach((line) => {
+            const fields = line.split(',');
+            let emptyCount = 0;
+            const newFields: string[] = [];
+
+            for (let i = 0; i < fields.length; i++) {
+              const trimmed = fields[i].trim();
+              if (trimmed === '') {
+                emptyCount++;
+                if (emptyCount >= 5) {
+                  break; // if there are consecutive blank values, break out of the line
+                }
+              } else {
+                emptyCount = 0;
+              }
+              newFields.push(trimmed);
+            }
+
+            // save only the valid values.
+            if (newFields.some((cell) => cell !== '')) {
+              filteredLines.push(newFields.join(','));
+            }
+          });
+
+          allSheetData.push(`Sheet: ${sheetName}\n${filteredLines.join('\n')}`);
         });
 
         fileContent = allSheetData.join('\n\n');
         break;
       }
-
       default:
         throw new Error('Unsupported file type. Please upload a valid file.');
     }
@@ -136,6 +165,10 @@ export class UploadService {
 
   public removeExtraNewLines(content: string): string {
     return content.replace(/(\r?\n){2,}/g, '\n');
+  }
+
+  public removeExtraCommas(content: string): string {
+    return content.replace(/,+/g, ',');
   }
 
   public removeDuplicates(content: string): string {
