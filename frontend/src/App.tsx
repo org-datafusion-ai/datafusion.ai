@@ -15,31 +15,30 @@ function AppRouter() {
 
   useEffect(() => {
     const initializeSession = async () => {
+      const currentPath = window.location.pathname;
+
+      if (currentPath !== '/') return;
+  
       try {
-        // Send a simple ping to backend to trigger session cookie middleware
         const res = await fetch(`${config.apiHost}/session/new`, {
           method: 'GET',
           credentials: 'include',
         });
+  
         const data = await res.json();
-
+  
         if (data.token) {
           setToken(data.token);
-          const currentPath = window.location.pathname;
-          const targetPath = `/${data.token}/documents`;
-
-          if (currentPath === '/') {
-            navigate(targetPath);
-          }
+          navigate(`/${data.token}/documents`);
         }
-
+  
       } catch (error) {
         console.error('Failed to initialize session:', error);
       }
     };
-
+  
     initializeSession();
-  }, [navigate]);
+  }, [navigate]);  
 
 
   return (

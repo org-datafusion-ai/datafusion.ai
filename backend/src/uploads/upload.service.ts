@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -10,12 +6,10 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
-import { UploadController } from './upload.controller';
 import { AIService } from '../ai/ai.service';
-import * as iconv from 'iconv-lite';
-import * as csv from 'csv-parse/sync';
-import * as chardet from 'chardet';
-import { CsvParserStream } from 'fast-csv';
+// import * as iconv from 'iconv-lite';
+// import * as csv from 'csv-parse/sync';
+
 
 @Injectable()
 export class UploadService {
@@ -105,7 +99,7 @@ export class UploadService {
     //   .join('\n');
     // 2. extract the info
     const extractedInfo = await this.aiService.extractInformation(fileContent);
-    // 3. save infor into DB
+
     const newUpload = new this.uploadModel({
       id: this.generateUniqueId(file.originalname),
       title: file.originalname,
@@ -124,9 +118,8 @@ export class UploadService {
     console.log('This is the content:' + fileContent);
     console.log('*****************************************');
 
-    console.log('Extracted Info:', extractedInfo);
 
-    return newUpload.save(); // save the upload object into DB.
+    return newUpload.save();
   }
 
   async getAllUploads(): Promise<UploadDocument[]> {
@@ -200,7 +193,7 @@ export class UploadService {
     });
     return uniqueLines.join('\n');
   }
-
+// see if need to delete it later if not useing.
   public csvToCleanJson(worksheet: xlsx.WorkSheet, maxEmptyCells = 6): any[] {
     const csv = xlsx.utils.sheet_to_csv(worksheet, { blankrows: false });
     const lines = csv.split(/\r?\n/);
@@ -213,7 +206,7 @@ export class UploadService {
 
       const emptyCount = (line.match(/,,/g) || []).length;
       if (emptyCount >= maxEmptyCells) {
-        continue; // 忽略這行
+        continue; // 
       }
 
       const row = line.split(',').map((s) => s.trim());
