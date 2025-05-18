@@ -26,6 +26,7 @@ export class CsvService {
             }
           });
 
+          // Iterate through the subFields and create headers
           subFields.forEach(subKey => {
             const header = `${key} - ${subKey}`;
             const existing = headerMap.get(header) || [];
@@ -44,8 +45,8 @@ export class CsvService {
           // If the key's value pair is an array of primitives
         } else if (Array.isArray(value)) {
           const existing = headerMap.get(key) || [];
-          const rawValues = value.map(v => String(v));
-          headerMap.set(key, [...existing, ...rawValues]);
+          const values = value.map(v => String(v));
+          headerMap.set(key, [...existing, ...values]);
 
           // If the key's value pair is primitive
         } else {
@@ -61,6 +62,14 @@ export class CsvService {
       rows.push([header, ...values]);
     }
 
-    return rows.map(row => row.join(',')).join('\n');
+    return rows.map(row => row.map(handleSpecialCharacters).join(',')).join('\n');
   }
+}
+
+// Handles values that contain special characters. Leaving them would otherwise break the CSV format.
+function handleSpecialCharacters(value: string): string {
+  if (/[,"\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
 }
