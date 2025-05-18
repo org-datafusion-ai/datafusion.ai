@@ -14,53 +14,49 @@ interface RowData {
   value: string;
 }
 
-const parseCsvToRowData = (csv: string): RowData[] => {
-  return csv
-    .split("\n")
-    .filter((line) => line.trim() !== "")
-    .map((line) => {
-      const [label, ...rest] = line.split(",");
-      return {
-        label: label?.trim() || "",
-        value: rest.join(",").trim()
-      };
-    });
-};
-
 const DownloadCSVPage: React.FC = () => {
-  const [csvString, setCsvString] = useState<string>("");
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [columnDefs, setColumnDefs] = useState<any[]>([]);
 
-  const fetchCsvPreview = useCallback(async () => {
-    try {
-      const response = await axios.get<string>(
-        `${config.apiHost}/csv/preview`,
-        {
-          withCredentials: true,
-          responseType: "text"
-        }
-      );
-      setCsvString(response.data);
-    } catch (error) {
-      console.error("Error fetching CSV preview:", error);
-    }
+  useEffect(() => {
+    fetch(`${config.apiHost}/csv/preview`, { credentials: "include" }) // Replace with your actual endpoint
+      .then(res => {
+        return res.text();
+      })
+      .then(data => {
+      console.log("Raw response text:", data);
+        if (data.length === 0) return;
+
+        // Split the text response
+        const rows = data.split("\n").map(row => row.split(","));
+        console.log("Parsed rows:", rows);
+
+        // Create columnDefs based on how many columns are in the longest row
+        const maxCols = Math.max(...rows.map((row: string[]) => row.length));
+        console.log("Max columns:", maxCols);
+        const cols = Array.from({ length: maxCols }, (_, i) => ({
+          headerName: i === 0 ? 'Field' : `Value ${i}`,
+          field: `col${i}`,
+          wrapText: true,
+          autoHeight: true,
+        }));
+
+        // Transform row data to AG Grid format
+        const transformed = rows.map((row: string[]) => {
+          const rowObj: any = {};
+          row.forEach((cell, i) => {
+            rowObj[`col${i}`] = cell;
+          });
+          return rowObj;
+        });
+
+        setColumnDefs(cols);
+        setRowData(transformed);
+      })
+      .catch((error) => {
+        console.error("Error fetching CSV preview:", error);
+      });
   }, []);
-
-  useEffect(() => {
-    fetchCsvPreview();
-  }, [fetchCsvPreview]);
-
-  useEffect(() => {
-    if (csvString) {
-      const data = parseCsvToRowData(csvString);
-      setRowData(data);
-    }
-  }, [csvString]);
-
-  const columnDefs: ColDef[] = [
-    { headerName: "Label", field: "label", flex: 1 },
-    { headerName: "Value", field: "value", flex: 2 }
-  ];
 
   const handleDownload = async () => {
     try {
