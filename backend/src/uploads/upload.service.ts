@@ -6,11 +6,12 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
-import { AIService } from '../ai/ai.service';
-
+import { UploadController } from './upload.controller';
+import { AIService } from '../ai/ai.service'
 
 @Injectable()
 export class UploadService {
+
   constructor(
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
@@ -80,6 +81,7 @@ export class UploadService {
 
     return newUpload.save();
   }
+
 
   async getAllUploads(): Promise<UploadDocument[]> {
     return this.uploadModel.find().populate('uploadedBy').exec();
