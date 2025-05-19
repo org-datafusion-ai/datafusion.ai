@@ -86,7 +86,7 @@ const DownloadCSVPage: React.FC = () => {
       <h1>Download CSV Page</h1>
       <div
         className="ag-theme-alpine"
-        style={{ height: "500px", width: "100%", marginBottom: "20px" }}
+        style={{ height: "500px", marginBottom: "20px" }}
       >
         <AgGridReact rowData={rowData} columnDefs={columnDefs} />
       </div>
