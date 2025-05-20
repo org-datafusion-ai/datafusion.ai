@@ -175,7 +175,8 @@ export function buildPrompt(fileContent: string): string {
     // Provide the titles of documents provided from the partner or partner's Contact. Only PDF, Excel, Word, or TXT file formats are allowed.If multiple files exist, return them as a list/array.
 
     == Output Format ==
-    Please return the extracted result in the following JSON structure:
+    Please return the extracted result in the following **strict JSON structure**:
+    All fields must be returned exactly in this structure. If data is missing, use an empty string ("") or "null" depending on field type. Do NOT guess missing values.
     {
     "Engagement Name": "",
     "Engagement Summary": "",
@@ -203,6 +204,7 @@ export function buildPrompt(fileContent: string): string {
         "Partner Industry Sub-Classification": ""
       }
     ],
+    please return each Partner Contacts as individle object like below
     "Partner Contacts": [
         {
         "Partner Contact organisation": "Nike",
@@ -239,12 +241,15 @@ export function buildPrompt(fileContent: string): string {
     ],
     "Document to Add to OIE Library": ["Profile", "OIE form"]
     }
-
-    == Notes ==
-    - Except for field "Engagement Summary", "Partner/project Industry Classification", "Partner/project Industry Sub-Classification", if any item is not found in the text, return the value as "null" or an empty string.
-    - IMPORTANT: Return ONLY the raw JSON. Do NOT include any markdown syntax, explanations, commentary, or formatting like "\`\`\`json".
-    - Except for field "Engagement Summary", "Partner/project Industry Classification", "Partner/project Industry Sub-Classification", for all other fields extract only what is explicitly stated in the text. Do not infer or guess.
-    - Ensure all outputs comply with the character limits where applicable. 
+    
+    == Formatting Rules ==
+    - Output must be valid JSON with double quotes around all string values.
+    - Do not include any markdown syntax or formatting like "\`\`\`json".
+    - Do not include commentary or extra text.
+    - Each contact (partner or academic) must be a separate object in the array.
+    - Do not merge multiple names/emails/phones into a single string or array.
+    - Only include documents shared by the partner (not internal forms).
+    - For any missing value (except "Engagement Summary", "Industry Classification", or "Sub-Classification"), return "" or "null".
 
     == Text Content ==
 

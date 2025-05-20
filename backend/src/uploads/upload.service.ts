@@ -6,16 +6,21 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
+import { UploadController } from './upload.controller';
 import { AIService } from '../ai/ai.service';
+// import * as iconv from 'iconv-lite';
+// import * as csv from 'csv-parse/sync';
 
 
 @Injectable()
 export class UploadService {
+
   constructor(
     @InjectModel(Upload.name)
     private readonly uploadModel: Model<UploadDocument>,
     private readonly aiService: AIService,
-  ) { }
+  ) {}
+
   async createUpload(
     file: Express.Multer.File,
     sessionToken: string,
@@ -41,27 +46,60 @@ export class UploadService {
         break;
       }
 
+      case '.csv':
+      case '.xls':
       case '.xlsx': {
         const workbook = xlsx.read(file.buffer, { type: 'buffer' });
         const allSheetData: string[] = [];
 
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
-          const sheetData = xlsx.utils.sheet_to_csv(worksheet);
-          allSheetData.push(`Sheet: ${sheetName}\n${sheetData}`);
+          const csv = xlsx.utils.sheet_to_csv(worksheet);
+          const lines = csv.split('\n');
+          const filteredLines: string[] = [];
+
+          lines.forEach((line) => {
+            const fields = line.split(',');
+            let emptyCount = 0;
+            const newFields: string[] = [];
+
+            for (let i = 0; i < fields.length; i++) {
+              const trimmed = fields[i].trim();
+              if (trimmed === '') {
+                emptyCount++;
+                if (emptyCount >= 5) {
+                  break; // if there are consecutive blank values, break out of the line
+                }
+              } else {
+                emptyCount = 0;
+              }
+              newFields.push(trimmed);
+            }
+
+            // save only the valid values.
+            if (newFields.some((cell) => cell !== '')) {
+              filteredLines.push(newFields.join(','));
+            }
+          });
+
+          allSheetData.push(`Sheet: ${sheetName}\n${filteredLines.join('\n')}`);
         });
 
         fileContent = allSheetData.join('\n\n');
         break;
       }
-
       default:
         throw new Error('Unsupported file type. Please upload a valid file.');
     }
 
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
-
+    fileContent = this.removeExtraCommas(fileContent);
+    // fileContent = fileContent
+    //   .split('\n')
+    //   .filter((line) => !/^,*$/.test(line.trim()))
+    //   .join('\n');
+    // 2. extract the info
     const extractedInfo = await this.aiService.extractInformation(fileContent);
 
     const newUpload = new this.uploadModel({
@@ -75,11 +113,17 @@ export class UploadService {
       uploadedBy: sessionToken,
     });
 
-    file.buffer.fill(0); 
-    file.buffer = null as any; 
+    // **Release file.buffer**
+    file.buffer.fill(0); // use 0 replace the content in buffer
+    file.buffer = null as any; // release memory
+
+    console.log('This is the content:' + fileContent);
+    console.log('*****************************************');
+
 
     return newUpload.save();
   }
+
 
   async getAllUploads(): Promise<UploadDocument[]> {
     return this.uploadModel.find().populate('uploadedBy').exec();
@@ -136,6 +180,10 @@ export class UploadService {
     return content.replace(/(\r?\n){2,}/g, '\n');
   }
 
+  public removeExtraCommas(content: string): string {
+    return content.replace(/,+/g, ',');
+  }
+
   public removeDuplicates(content: string): string {
     const lines = content.split('\n');
     const seen = new Set<string>();
@@ -147,5 +195,39 @@ export class UploadService {
       return true;
     });
     return uniqueLines.join('\n');
+  }
+// see if need to delete it later if not useing.
+  public csvToCleanJson(worksheet: xlsx.WorkSheet, maxEmptyCells = 6): any[] {
+    const csv = xlsx.utils.sheet_to_csv(worksheet, { blankrows: false });
+    const lines = csv.split(/\r?\n/);
+    const results: any[] = [];
+
+    let headers: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      const emptyCount = (line.match(/,,/g) || []).length;
+      if (emptyCount >= maxEmptyCells) {
+        continue; // 
+      }
+
+      const row = line.split(',').map((s) => s.trim());
+
+      if (i === 0) {
+        headers = row.map(
+          (h) => h || `__EMPTY_${Math.random().toString(36).slice(2, 6)}`,
+        );
+        continue;
+      }
+
+      const obj: any = {};
+      row.forEach((val, idx) => {
+        obj[headers[idx]] = val;
+      });
+      results.push(obj);
+    }
+
+    return results;
   }
 }
