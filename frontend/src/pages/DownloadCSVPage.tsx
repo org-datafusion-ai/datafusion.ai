@@ -5,7 +5,6 @@ import { ColDef, AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import config from "../config";
-import axios from "axios";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,16 +23,21 @@ const DownloadCSVPage: React.FC = () => {
         return res.text();
       })
       .then(data => {
-      console.log("Raw response text:", data);
         if (data.length === 0) return;
 
-        // Split the text response
-        const rows = data.split("\n").map(row => row.split(","));
-        console.log("Parsed rows:", rows);
+        // Split the text response and match quotation marks so CSV format is displayed properly
+        const rows = data.split("\n").map(row => {
+          return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => {
+            // Remove surrounding quotes if present
+            if (cell.startsWith('"') && cell.endsWith('"')) {
+              return cell.slice(1, -1).replace(/""/g, '"'); // Handle escaped quotes
+            }
+            return cell;
+          });
+        });
 
         // Create columnDefs based on how many columns are in the longest row
         const maxCols = Math.max(...rows.map((row: string[]) => row.length));
-        console.log("Max columns:", maxCols);
         const cols = Array.from({ length: maxCols }, (_, i) => ({
           headerName: i === 0 ? 'Field' : `Value ${i}`,
           field: `col${i}`,
