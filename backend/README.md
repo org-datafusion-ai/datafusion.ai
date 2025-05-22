@@ -87,16 +87,16 @@ Start the MongoDB service (mongod) and verify the installation using mongo --ver
 For a graphical user interface, download and install MongoDB Compass.
 
 ### Azure Cosmos DB (MongoDB API) Setup 
-please rafer to the 
 * Update your .env file:
+```bash
 DB_USERNAME=datafusion-ai-server
 DB_PASSWORD=PRIMARY PASSWORD from Azure portal
 DB_URI=PRIMARY CONNECTION STRING from Azure portal
-
+```
 **Make sure add the .env file name in .gitignore file for security.**
 * Ensure your client IP is whitelisted in the Azure Cosmos DB Networking settings.
 
-3. Switching Between Local and Azure
+###  Switching Between Local and Azure
 Uncomment the block of code to use either the local or Azure MongoDB instance in app.module.ts file.
 
 
