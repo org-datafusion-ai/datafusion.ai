@@ -1,116 +1,176 @@
 
-## Description
-This project is a NestJS backend API server for extracting and storing structured data from various document formats (PDF, Word, Excel, txt). The extracted content is stored in **Azure Cosmos DB** using MongoDB.
+# Datafusion.AI
 
-## Project setup
-## For more detail, visit https://t222.atlassian.net/wiki/x/AQAx (1. Required Packages and Apps 2. Local Environment. )
+This project is a **NestJS backend API** server for extracting and storing structured data from various document formats (**PDF**, **Word**, **Excel**, **txt**). Extracted content is stored in **Azure Cosmos DB** using MongoDB.
 
+---
+
+## 📚 Table of Contents
+
+- [Datafusion.AI](#datafusionai)
+  - [📚 Table of Contents](#-table-of-contents)
+  - [🛠️ Project Setup](#️-project-setup)
+  - [📦 Install Required Libraries](#-install-required-libraries)
+    - [Global Setup](#global-setup)
+    - [Frontend Integration](#frontend-integration)
+    - [Document Parsing](#document-parsing)
+    - [AI Integration](#ai-integration)
+    - [MongoDB \& Uploads](#mongodb--uploads)
+    - [Azure Integration](#azure-integration)
+    - [Environment Configuration](#environment-configuration)
+  - [🗄️ Database Setup](#️-database-setup)
+    - [Local MongoDB Setup](#local-mongodb-setup)
+    - [Azure Cosmos DB (MongoDB API) Setup](#azure-cosmos-db-mongodb-api-setup)
+    - [Switching Between Local and Azure](#switching-between-local-and-azure)
+  - [🚀 Compile and Run the Project](#-compile-and-run-the-project)
+    - [Run Locally](#run-locally)
+    - [Run Tests](#run-tests)
+  - [☁️ Run on Azure](#️-run-on-azure)
+  - [🐳 Docker Setup](#-docker-setup)
+    - [Step 1: `docker-compose.yml` (Root Directory)](#step-1-docker-composeyml-root-directory)
+    - [Step 2: Dockerfile](#step-2-dockerfile)
+    - [Step 3: Docker Commands](#step-3-docker-commands)
+  - [📝 License](#-license)
+
+---
+
+## 🛠️ Project Setup
+
+For detailed instructions, visit: [Confluence Wiki](https://t222.atlassian.net/wiki/x/AQAx)  
+Sections:  
+1. Required Packages and Apps  
+2. Local Environment  
+
+Install dependencies:
 ```bash
-$ npm install
-```
+npm install
+````
 
-## Install Required Libraries
-### installation cmd
-*nest.js*
+---
+
+## 📦 Install Required Libraries
+
+### Global Setup
+
 ```bash
 npm i -g typescript @nestjs/cli
 ```
-*connect with the front end*
+
+### Frontend Integration
+
 ```bash
 npm install axios
 ```
-*Encode pdf files.*
+
+### Document Parsing
+
 ```bash
-npm install pdf-parse
+npm install pdf-parse       # PDF
+npm install mammoth         # Word (.docx)
+npm install xlsx            # Excel (.xlsx)
 ```
-*Encode word files.*
+
+### AI Integration
+
 ```bash
-npm install mammoth
+npm install openai axios
 ```
-*Encode Excel files.*
+
+### MongoDB & Uploads
+
 ```bash
-npm install xlsx 
-```
-*For openAI prompt*
-```bash
-npm i openai axios
-```
-### Database installation cmd
-*most popular MongoDB object modeling tool.*
-```bash
-npm i @nestjs/mongoose mongoose
-```
-*upload files*
-```bash
+npm install @nestjs/mongoose mongoose
 npm install --save-dev @types/express @types/multer
 ```
-*Azure cosmos DB*
+
+### Azure Integration
+
 ```bash
-npm i --save @nestjs/azure-database 
+npm install @nestjs/azure-database
 ```
-*make sure the .env file can get access*
+
+### Environment Configuration
+
 ```bash
-npm install @nestjs/config 
+npm install @nestjs/config
 ```
-## Database setup
-This guide explains how to set up MongoDB for your application, both locally and on Azure Cosmos DB using the MongoDB API. Follow the steps based on your environment.
+
+---
+
+## 🗄️ Database Setup
+
 ### Local MongoDB Setup
-* Prerequisites
-Install MongoDB Community Edition:
-Download and install MongoDB from the official MongoDB website.
-Ensure MongoDB is added to your system's PATH for command-line access (mongo and mongod commands).
-Start the MongoDB service (mongod) and verify the installation using mongo --version.
-* Install MongoDB Compass (Optional):
-For a graphical user interface, download and install MongoDB Compass.
 
-### Azure Cosmos DB (MongoDB API) Setup 
-* Update your .env file:
-```bash
+**Prerequisites**:
+
+* Install [MongoDB Community Edition](https://www.mongodb.com/try/download/community)
+* Add MongoDB to system PATH
+* Start MongoDB with `mongod`
+* Check version with `mongo --version`
+
+**Optional**:
+Install [MongoDB Compass](https://www.mongodb.com/products/compass) for GUI-based interaction.
+
+---
+
+### Azure Cosmos DB (MongoDB API) Setup
+
+Update your `.env` file:
+
+```env
 DB_USERNAME=datafusion-ai-server
-DB_PASSWORD=PRIMARY PASSWORD from Azure portal
-DB_URI=PRIMARY CONNECTION STRING from Azure portal
+DB_PASSWORD=YOUR_AZURE_PRIMARY_PASSWORD
+DB_URI=YOUR_AZURE_PRIMARY_CONNECTION_STRING
 ```
-**Make sure add the .env file name in .gitignore file for security.**
-* Ensure your client IP is whitelisted in the Azure Cosmos DB Networking settings.
 
-###  Switching Between Local and Azure
-Uncomment the block of code to use either the local or Azure MongoDB instance in app.module.ts file.
+✅ **Important**: Add `.env` to your `.gitignore`.
 
+Ensure your IP is whitelisted in Azure Cosmos DB > Networking settings.
 
-## Compile and run the project
-### Run locally
-#### Deployment:
+---
+
+### Switching Between Local and Azure
+
+Toggle between local and cloud DB in `app.module.ts` by commenting/uncommenting the relevant MongoDB connection block.
+
+---
+
+## 🚀 Compile and Run the Project
+
+### Run Locally
 
 ```bash
-# development
-$ npm run start
+# Development
+npm run start
 
-# watch mode
-$ npm run start:dev
+# Watch mode
+npm run start:dev
 
-# production mode
-$ npm run start:prod
+# Production
+npm run start:prod
 ```
 
-#### Run tests:
+### Run Tests
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run test         # Unit tests
+npm run test:e2e     # End-to-end tests
+npm run test:cov     # Test coverage
 ```
-###  Run on Azure
 
-### For deployment environment set up, please visit https://t222.atlassian.net/wiki/x/AoBZAg for more info.
+---
 
-#### Deployment:
-1. Created a docker-compose.yml file at the root folder use the format:
-```
+## ☁️ Run on Azure
+
+Refer to: [Deployment Environment Setup](https://t222.atlassian.net/wiki/x/AoBZAg)
+
+---
+
+## 🐳 Docker Setup
+
+### Step 1: `docker-compose.yml` (Root Directory)
+
+```yaml
 version: '3.8'
 
 services:
@@ -123,13 +183,14 @@ services:
     volumes:
       - mongo-data:/data/db
     restart: always
+
   mongo-init:
     image: mongo:6.0
     depends_on:
       - mongodb
     entrypoint: >
       bash -c "
-        echo 'Waiting for MongoDB to be ready...' &&
+        echo 'Waiting for MongoDB...' &&
         sleep 5 &&
         mongosh --host mongodb --eval '
           try {
@@ -147,6 +208,7 @@ services:
         '
       "
     restart: "no"
+
   backend:
     build:
       args:
@@ -163,17 +225,17 @@ services:
       - DB_URI=mongodb://datafusion-ai-server:DB_PASSWORD@datafusion-ai-server.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@datafusion-ai-server@
       - AZURE_GPT4_API_KEY=
       - AZURE_GPT4_ENDPOINT=https://datafusion-azureopenai.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2025-01-01-preview
-      - mongo-init
     restart: always
+
 volumes:
   mongo-data:
-
 ```
 
-2. Update the `docker-compose.yml` file with your authentication tokens (`DB_PASSWORD`, `AZURE_GPT4_API_KEY`). You can find these tokens in your Azure portal.
+---
 
-3. Created a dockerfile with the format below in the root folder if it is not exist:
-```
+### Step 2: Dockerfile
+
+```Dockerfile
 FROM node:23 AS frontend
 ARG REACT_APP_API_HOST='http://datafusion/api'
 WORKDIR /app
@@ -182,12 +244,14 @@ RUN npm install
 COPY ./frontend .
 ENV REACT_APP_API_HOST=$REACT_APP_API_HOST
 RUN npm run build
+
 FROM node:23 as backend
 WORKDIR /app
 COPY ./backend/package*.json ./
 RUN npm install
 COPY ./backend .
 RUN npm run build
+
 FROM node:23
 WORKDIR /app
 COPY ./backend/package*.json ./
@@ -201,24 +265,29 @@ ENV JWT_SECRET=''
 EXPOSE $PORT
 CMD ["node", "dist/main"]
 ```
-4. Docker cmd 
 
-* Build and start the container:
+---
+
+### Step 3: Docker Commands
+
 ```bash
-// When you have made changes to the code:
+# Rebuild and start containers
 docker-compose up --build
-```
 
-// When you haven't made any changes and just want to test the app
-```bash
+# Start containers without rebuild
 docker-compose up
-```
 
-* Stop the containers
-```bash
+# Stop all containers
 docker-compose down
 ```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📝 License
+
+NestJS is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+```
+
+You can now copy and paste this Markdown content into your README.md or documentation editor. Let me know if you need this converted to `.md` file format or styled for Confluence.
+```
