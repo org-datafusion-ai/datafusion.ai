@@ -18,7 +18,7 @@ const DownloadCSVPage: React.FC = () => {
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(`${config.apiHost}/csv/preview`, { credentials: "include" }) // Replace with your actual endpoint
+    fetch(`${config.apiHost}/csv/preview`, { credentials: "include" })
       .then(res => {
         return res.text();
       })
