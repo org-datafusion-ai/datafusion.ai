@@ -11,22 +11,38 @@ $ npm install
 ```
 ## Install Libraries
 ### installation cmd
-*Install NestJS CLI and TypeScript globally for backend development*
+*Install NestJS CLI and TypeScript globally for backend 
+development*
+```bash
 npm i -g typescript @nestjs/cli
+```
 *Install Axios for making HTTP requests (connecting with the backend)*
+```bash
 npm install axios
+```
 *Install Ag-Grid for advanced data tables in React*
+```bash
 npm install ag-grid-community ag-grid-react
+```
 *Install FilePond for handling file uploads in React*
+```bash
 npm install filepond react-filepond
+```
 *Install FilePond plugins for additional features:*
-npm install filepond-plugin-file-validate-size  *Validate file size before upload*
-npm install filepond-plugin-image-preview       *Show image previews in FilePond*
-npm install filepond-plugin-pdf-preview         *Enable PDF preview in FilePond*       
+```bash
+npm install filepond-plugin-file-validate-size
+```  *Validate file size before upload*
+```bash
+npm install filepond-plugin-image-preview 
+```      *Show image previews in FilePond*
+```bash
+npm install filepond-plugin-pdf-preview 
+```        *Enable PDF preview in FilePond*       
 
 *To install all required dependencies at once, use the following command:*
+```bash
 npm install @heroicons/react @testing-library/dom @testing-library/jest-dom @testing-library/react @testing-library/user-event @types/jest @types/node @types/react @types/react-dom ag-grid-community ag-grid-react axios filepond filepond-plugin-file-validate-size filepond-plugin-image-preview filepond-plugin-pdf-preview react react-dom react-filepond react-router-dom react-scripts react-toastify typescript web-vitals autoprefixer postcss @types/axios @types/react-router-dom @types/react-toastify
-
+```
 ## Compile and run the project
 ### 1. Run Locally
 
