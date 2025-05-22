@@ -2,8 +2,9 @@ import { Controller, Req, Res, All } from '@nestjs/common';
 import { join, resolve } from 'path';
 import { Request, Response } from 'express';
 import * as fs from 'fs';
+import { ApiExcludeController } from '@nestjs/swagger';
 
-
+@ApiExcludeController()
 @Controller({ path: '*'})
 export class FrontendController {
   @All()

@@ -8,16 +8,16 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @ApiTags('session')
 export class SessionController {
   @Get()
-  @ApiOperation({ summary: 'Generate session token' })
-  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiOperation({ summary: `Retrieve the user's session token` })
+  @ApiResponse({ status: 200, description: `The user's session token was successfully retrieved.` })
   getSession(@Req() req: Request) {
     const token = req.cookies['session_token'];
     return { token };
   }
 
   @Get('new')
-  @ApiOperation({ summary: 'Generate new session token' })
-  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiOperation({ summary: 'Generate a new session token' })
+  @ApiResponse({ status: 200, description: 'A new session token has been successfully generated.' })
   createNewSession(@Res() res: Response) {
     const newToken = uuidv4();
     res.cookie('session_token', newToken, {
