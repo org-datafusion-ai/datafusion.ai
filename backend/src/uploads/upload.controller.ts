@@ -54,20 +54,18 @@ export class UploadController {
   @ApiOperation({ summary: 'Upload multiple files' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Files to upload',
     schema: {
       type: 'object',
       properties: {
         filepond: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
+          type: 'string',
+          format: 'binary',
+          description: 'One or more files to be uploaded. Accepts PDF, DOCX, XLSX, CSV, and TXT formats. Maximum of 6 files per request. Files are processed and stored for AI extraction and session-based tracking.',
         },
       },
     },
   })
+
   @ApiResponse({ status: 201, description: 'Files uploaded successfully.' })
   async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,) {
     const sessionToken = req.cookies['session_token'];

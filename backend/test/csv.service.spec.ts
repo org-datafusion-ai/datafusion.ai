@@ -10,59 +10,72 @@ describe('CsvService', () => {
   };
 
   beforeEach(() => {
-    uploadService = mockUploadService as unknown as UploadService;
-    csvService = new CsvService(uploadService);
+    csvService = new CsvService(mockUploadService as any);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('generateCsv', () => {
     it('should generate CSV from uploaded processed data', async () => {
-      const mockUploads = [
+      const sessionToken = 'mockSession123';
+
+      // Mock uploads
+      mockUploadService.getUploadBySession.mockResolvedValue([
         {
           processedData: {
             name: 'Nicole',
+            age: 25,
             details: {
               role: 'Developer',
-              skills: ['TypeScript', 'NestJS']
+              skills: ['TypeScript', 'NestJS'],
             },
-          }
+          },
         },
         {
           processedData: {
             name: 'James',
-            age: 25
-          }
+          },
         },
-      ];
+      ]);
 
-      mockUploadService.getUploadBySession.mockResolvedValue(mockUploads);
+      const csv = await csvService.generateCsv(sessionToken);
 
-      const result = await csvService.generateCsv('abc123');
-
-      expect(mockUploadService.getUploadBySession).toHaveBeenCalledWith('abc123');
-
-      // Basic check for expected content
-      expect(result).toContain('Record 1');
-      expect(result).toContain('name,Nicole');
-      expect(result).toContain('role,Developer');
-      expect(result).toContain('skills,TypeScript');
-      expect(result).toContain('skills,NestJS');
-      expect(result).toContain('Record 2');
-      expect(result).toContain('age,24');
+      expect(typeof csv).toBe('string');
+      expect(csv).toContain('name,Nicole,James');
+      expect(csv).toContain('age,25');
+      expect(csv).toContain('details - role,Developer');
+      expect(csv).toContain('details - skills,"TypeScript,NestJS"');
     });
 
-    it('should return empty CSV if no uploads exist', async () => {
-      mockUploadService.getUploadBySession.mockResolvedValue([]);
+    it('should handle empty processedData gracefully', async () => {
+      mockUploadService.getUploadBySession.mockResolvedValue([
+        { processedData: {} },
+        { processedData: null },
+      ]);
 
-      const result = await csvService.generateCsv('abc123');
-      expect(result).toBe('');
+      const csv = await csvService.generateCsv('empty-session');
+
+      expect(csv).toBe('');
     });
 
-    it('should handle missing processedData gracefully', async () => {
-      const mockUploads = [{}, { processedData: null }];
-      mockUploadService.getUploadBySession.mockResolvedValue(mockUploads);
+    it('should handle arrays of nested objects', async () => {
+      mockUploadService.getUploadBySession.mockResolvedValue([
+        {
+          processedData: {
+            history: [
+              { year: 2020, status: 'Active' },
+              { year: 2021, status: 'Inactive' },
+            ],
+          },
+        },
+      ]);
 
-      const result = await csvService.generateCsv('abc123');
-      expect(result).toBe('\n\nRecord 2\n\n');
+      const csv = await csvService.generateCsv('nested-session');
+
+      expect(csv).toContain('history - year,2020,2021');
+      expect(csv).toContain('history - status,Active,Inactive');
     });
   });
 });

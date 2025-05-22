@@ -1,0 +1,72 @@
+PASS test/session.controller.spec.ts
+  SessionController
+    getSession
+      ✓ should return the session token from cookies (14 ms)
+    createNewSession
+      ✓ should set a session cookie and return the token (4 ms)
+
+PASS test/ai.service.spec.ts
+  AIService
+    ✓ should be defined (10 ms)
+    ✓ should call Azure and return parsed JSON data (2 ms)
+    ✓ should throw an error if GPT response is not valid JSON (26 ms)
+    ✓ should throw HttpException if axios fails (3 ms)
+
+PASS test/csv.service.spec.ts
+  CsvService
+    generateCsv
+      ✓ should generate CSV from uploaded processed data (3 ms)
+      ✓ should handle empty processedData gracefully (1 ms)
+      ✓ should handle arrays of nested objects (5 ms)
+
+PASS test/csv.controller.spec.ts
+  CsvController
+    previewCsv
+      ✓ should return generated CSV string (11 ms)
+    generateCsvDownload
+      ✓ should set headers and send CSV as attachment (5 ms)
+      ✓ should handle errors and send 500 (18 ms)
+
+PASS test/upload.service.spec.ts
+  UploadService
+    createUpload
+      ✓ should handle .txt files correctly (9 ms)
+      ✓ should handle .pdf files correctly (2 ms)
+      ✓ should throw for unsupported file types (2 ms)
+    getAllUploads
+      ✓ should return all uploads (1 ms)
+    getUploadById
+      ✓ should return upload by ID (1 ms)
+      ✓ should throw if upload not found (1 ms)
+    getUploadBySession
+      ✓ should return uploads by session token
+      ✓ should throw if none found (1 ms)
+    updateProcessedData
+      ✓ should update and return upload (1 ms)
+    deleteUploadsBySession
+      ✓ should delete by sessionToken (2 ms)
+    utility functions
+      ✓ should remove extra newlines
+      ✓ should remove duplicate lines
+      ✓ should remove extra commas (1 ms)
+      ✓ should generate unique ID
+
+PASS test/upload.controller.spec.ts
+  UploadController
+    ✓ should be defined (9 ms)
+    uploadFile
+      ✓ should return processed upload results (2 ms)
+    getAllUploads
+      ✓ should return all uploads (1 ms)
+    getUploadById
+      ✓ should return upload by ID
+    updateProcessedData
+      ✓ should update processed data for an upload (2 ms)
+    deleteUploadsBySession
+      ✓ should delete uploads by session token (1 ms)
+
+Test Suites: 6 passed, 6 total
+Tests:       32 passed, 32 total
+Snapshots:   0 total
+Time:        3.669 s, estimated 4 s
+Ran all test suites.
