@@ -32,11 +32,18 @@ const DownloadCSVPage: React.FC = () => {
         if (data.length === 0) return;
   
         // Split the text response
-        const rows = data.split("\n").map((row) => row.split(","));
+        const rows = data.split("\n").map(row => {
+          return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => {
+            // Remove surrounding quotes if present
+            if (cell.startsWith('"') && cell.endsWith('"')) {
+              return cell.slice(1, -1).replace(/""/g, '"'); // Handle escaped quotes
+            }
+            return cell;
+          });
+        });
   
         // Create columnDefs based on how many columns are in the longest row
         const maxCols = Math.max(...rows.map((row: string[]) => row.length));
-        console.log("Max columns:", maxCols);
         const cols = Array.from({ length: maxCols }, (_, i) => ({
           headerName: i === 0 ? "Field" : `Value ${i}`,
           field: `col${i}`,
@@ -101,7 +108,7 @@ const DownloadCSVPage: React.FC = () => {
       <h1>Download CSV Page</h1>
       <div
         className="ag-theme-alpine"
-        style={{ height: "500px", width: "100%", marginBottom: "20px" }}
+        style={{ height: "50rem", width: "100%", marginBottom: "20px" }}
       >
         <AgGridReact rowData={rowData} columnDefs={columnDefs} />
       </div>
