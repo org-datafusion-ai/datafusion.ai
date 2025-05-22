@@ -9,9 +9,6 @@ import { AIModule } from '../ai/ai.module';
   imports: [
     MongooseModule.forFeature([
     { name: Upload.name, schema: UploadSchema }
-    //** 
-    // URL: https://datafusion-ai-server.mongo.cosmos.azure.com:443/
-    // */ 
 
   ]),
   AIModule

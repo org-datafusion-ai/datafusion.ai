@@ -17,9 +17,6 @@ export class Upload {
   @Prop({ type: String })
   fileExtension: string;
 
-  // @Prop({ type: Buffer })
-  // content: Buffer;
-
   @Prop({ type: String })
   contentInStr: string;
 

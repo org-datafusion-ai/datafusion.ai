@@ -6,7 +6,6 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
-import { UploadController } from './upload.controller';
 import { AIService } from '../ai/ai.service';
 
 @Injectable()
@@ -65,7 +64,7 @@ export class UploadService {
               if (trimmed === '') {
                 emptyCount++;
                 if (emptyCount >= 5) {
-                  break; // if there are consecutive blank values, break out of the line
+                  break; 
                 }
               } else {
                 emptyCount = 0;
@@ -73,7 +72,6 @@ export class UploadService {
               newFields.push(trimmed);
             }
 
-            // save only the valid values.
             if (newFields.some((cell) => cell !== '')) {
               filteredLines.push(newFields.join(','));
             }
@@ -91,6 +89,7 @@ export class UploadService {
 
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
+    fileContent = this.removeExtraCommas(fileContent);
 
     const extractedInfo = await this.aiService.extractInformation(fileContent);
 
@@ -148,11 +147,8 @@ export class UploadService {
     return upload.save();
   }
 
-  async deleteUpload(uploadId: string): Promise<void> {
-    const result = await this.uploadModel.findByIdAndDelete(uploadId).exec();
-    if (!result) {
-      throw new NotFoundException(`Upload with ID "${uploadId}" not found`);
-    }
+  async deleteUploadsBySession(sessionToken: string): Promise<void> {
+    await this.uploadModel.deleteMany({ sessionToken });
   }
 
   private generateUniqueId(file: string): string {
@@ -182,5 +178,39 @@ export class UploadService {
       return true;
     });
     return uniqueLines.join('\n');
+  }
+
+  public csvToCleanJson(worksheet: xlsx.WorkSheet, maxEmptyCells = 6): any[] {
+    const csv = xlsx.utils.sheet_to_csv(worksheet, { blankrows: false });
+    const lines = csv.split(/\r?\n/);
+    const results: any[] = [];
+
+    let headers: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      const emptyCount = (line.match(/,,/g) || []).length;
+      if (emptyCount >= maxEmptyCells) {
+        continue; // 
+      }
+
+      const row = line.split(',').map((s) => s.trim());
+
+      if (i === 0) {
+        headers = row.map(
+          (h) => h || `__EMPTY_${Math.random().toString(36).slice(2, 6)}`,
+        );
+        continue;
+      }
+
+      const obj: any = {};
+      row.forEach((val, idx) => {
+        obj[headers[idx]] = val;
+      });
+      results.push(obj);
+    }
+
+    return results;
   }
 }
