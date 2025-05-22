@@ -31,6 +31,21 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) { }
 
   @Post()
+  @ApiOperation({ summary: 'Upload multiple files' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        filepond: {
+          type: 'string',
+          format: 'binary',
+          description: 'One or more files to be uploaded. Accepts PDF, DOCX, XLSX, CSV, and TXT formats. Maximum of 6 files per request. Files are processed and stored for AI extraction and session-based tracking. This is also where the AI processes the files',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Files uploaded successfully.' })
   @UseInterceptors(
     FilesInterceptor('filepond', 6, {
       fileFilter: (req, file, callback) => {
@@ -51,22 +66,6 @@ export class UploadController {
       },
     }),
   )
-  @ApiOperation({ summary: 'Upload multiple files' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        filepond: {
-          type: 'string',
-          format: 'binary',
-          description: 'One or more files to be uploaded. Accepts PDF, DOCX, XLSX, CSV, and TXT formats. Maximum of 6 files per request. Files are processed and stored for AI extraction and session-based tracking.',
-        },
-      },
-    },
-  })
-
-  @ApiResponse({ status: 201, description: 'Files uploaded successfully.' })
   async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,) {
     const sessionToken = req.cookies['session_token'];
 

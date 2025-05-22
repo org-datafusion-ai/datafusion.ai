@@ -15,13 +15,20 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('My API')
-    .setDescription('API documentation for my NestJS app')
+    .setTitle('DatafusionAI')
+    .setDescription('API documentation for DatafusionAI')
     .setVersion('1.0')
     .addTag('example')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config, {
+      extraModels: [],
+      deepScanRoutes: true,
+      ignoreGlobalPrefix: false,
+      operationIdFactory: (controllerKey: string, methodKey: string) =>
+        controllerKey === 'FrontendController' ? `${controllerKey}_${methodKey}` : `${controllerKey}_${methodKey}`,
+    });
+    
   SwaggerModule.setup('api-docs', app, document);
 
   const port = process.env.PORT ?? 5000;
