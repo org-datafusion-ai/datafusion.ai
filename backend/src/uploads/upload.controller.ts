@@ -121,7 +121,7 @@ export class UploadController {
 
   @Delete('delete')
   @ApiOperation({ summary: 'Delete an upload by ID' })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ name: 'sessionToken', required: true })
   @ApiResponse({ status: 200, description: 'Upload deleted successfully.' })
   async deleteUploadsBySession(@Param('sessionToken') sessionToken: string) {
     await this.uploadService.deleteUploadsBySession(sessionToken);

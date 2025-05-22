@@ -85,13 +85,20 @@
       "ts",
       "tsx"
     ],
-    "rootDir": "test",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "src/**/*.ts",
+      "!src/frontend/*.ts",
+      "!src/ai/ai.module.ts",
+      "!src/ai/ai.prompt.ts",
+      "!**/*.module.ts",
+      "!**/*.middleware.ts",
+      "!**/*.spec.ts",
+      "!**/main.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
