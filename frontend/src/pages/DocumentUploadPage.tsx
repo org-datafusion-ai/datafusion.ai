@@ -60,7 +60,14 @@ const DocumentUploadPage: React.FC = () => {
       navigate(`/${sessionToken}/download`);
     } catch (error) {
       console.error("Error uploading files:", error);
-      toast.error("Failed to upload files.");
+      toast.update(toastId, {
+        render: "Unsupported file type. Please select only word, excel, pdf, and txt files.",
+        type: "error",
+        isLoading: false,
+        autoClose: 8000,
+        closeOnClick: true,
+        draggable: true
+      });
     } finally {
       setLoading(false);
     }
