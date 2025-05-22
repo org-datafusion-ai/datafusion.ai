@@ -93,20 +93,23 @@ export class UploadController {
 
   @Get()
   @ApiOperation({ summary: 'Get all uploaded records' })
-  @ApiResponse({ status: 200, description: 'Returns all upload records.' })
+  @ApiResponse({ status: 200, description: 'Successfully returns all uploaded records.' })
   async getAllUploads() {
     return this.uploadService.getAllUploads();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific upload by ID' })
-  @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'Returns upload by ID.' })
+  @ApiParam({ name: 'id', required: true, description: 'The ID of the upload to retrieve.' })
+  @ApiResponse({ status: 200, description: 'Successfully returns the upload by ID.' })
   async getUploadById(@Param('id') id: string) {
     return this.uploadService.getUploadById(id);
   }
 
   @Put(':id/updateProcessedData')
+  @ApiOperation({ summary: 'Update processedData field for an upload by ID.' })
+  @ApiParam({ name: 'id', required: true, description: 'The ID of the upload to update.' })
+  @ApiResponse({ status: 200, description: 'Successfully updates the processedData field for the upload of the given ID.' })
   async updateProcessedData(
     @Param('id') id: string,
     @Body() processedData: Record<string, any>,
@@ -120,9 +123,9 @@ export class UploadController {
 
 
   @Delete('delete')
-  @ApiOperation({ summary: 'Delete an upload by ID' })
-  @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'Upload deleted successfully.' })
+  @ApiOperation({ summary: 'Delete all uploads in a session by its sessionToken' })
+  @ApiParam({ name: 'sessionToken', required: true, description: 'The session token of the session where the files were uploaded.' })
+  @ApiResponse({ status: 200, description: 'Uploads for this session were deleted successfully.' })
   async deleteUploadsBySession(@Param('sessionToken') sessionToken: string) {
     await this.uploadService.deleteUploadsBySession(sessionToken);
     return { message: 'Uploads for this session deleted successfully' };
