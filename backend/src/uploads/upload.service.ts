@@ -6,11 +6,7 @@ import { Upload, UploadDocument } from './upload.schemas';
 import * as mammoth from 'mammoth';
 import * as xlsx from 'xlsx';
 import pdfParse from 'pdf-parse';
-import { UploadController } from './upload.controller';
 import { AIService } from '../ai/ai.service';
-// import * as iconv from 'iconv-lite';
-// import * as csv from 'csv-parse/sync';
-
 
 @Injectable()
 export class UploadService {
@@ -68,7 +64,7 @@ export class UploadService {
               if (trimmed === '') {
                 emptyCount++;
                 if (emptyCount >= 5) {
-                  break; // if there are consecutive blank values, break out of the line
+                  break; 
                 }
               } else {
                 emptyCount = 0;
@@ -76,7 +72,6 @@ export class UploadService {
               newFields.push(trimmed);
             }
 
-            // save only the valid values.
             if (newFields.some((cell) => cell !== '')) {
               filteredLines.push(newFields.join(','));
             }
@@ -95,11 +90,7 @@ export class UploadService {
     fileContent = this.removeExtraNewLines(fileContent);
     fileContent = this.removeDuplicates(fileContent);
     fileContent = this.removeExtraCommas(fileContent);
-    // fileContent = fileContent
-    //   .split('\n')
-    //   .filter((line) => !/^,*$/.test(line.trim()))
-    //   .join('\n');
-    // 2. extract the info
+
     const extractedInfo = await this.aiService.extractInformation(fileContent);
 
     const newUpload = new this.uploadModel({
@@ -113,13 +104,8 @@ export class UploadService {
       uploadedBy: sessionToken,
     });
 
-    // **Release file.buffer**
-    file.buffer.fill(0); // use 0 replace the content in buffer
-    file.buffer = null as any; // release memory
-
-    console.log('This is the content:' + fileContent);
-    console.log('*****************************************');
-
+    file.buffer.fill(0); 
+    file.buffer = null as any; 
 
     return newUpload.save();
   }
@@ -161,11 +147,8 @@ export class UploadService {
     return upload.save();
   }
 
-  async deleteUpload(uploadId: string): Promise<void> {
-    const result = await this.uploadModel.findByIdAndDelete(uploadId).exec();
-    if (!result) {
-      throw new NotFoundException(`Upload with ID "${uploadId}" not found`);
-    }
+  async deleteUploadsBySession(sessionToken: string): Promise<void> {
+    await this.uploadModel.deleteMany({ sessionToken });
   }
 
   private generateUniqueId(file: string): string {
@@ -196,7 +179,7 @@ export class UploadService {
     });
     return uniqueLines.join('\n');
   }
-// see if need to delete it later if not useing.
+
   public csvToCleanJson(worksheet: xlsx.WorkSheet, maxEmptyCells = 6): any[] {
     const csv = xlsx.utils.sheet_to_csv(worksheet, { blankrows: false });
     const lines = csv.split(/\r?\n/);

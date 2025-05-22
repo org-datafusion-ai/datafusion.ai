@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { downloadCSV } from "../utils/ExportCSV";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import { toast } from "react-toastify";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import config from "../config";
 import axios from "axios";
+import NewSessionButton from "../components/NewSessionButton";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import DeleteUploadsButton from "../components/DeleteUploadButton";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -17,30 +21,29 @@ interface RowData {
 const DownloadCSVPage: React.FC = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [columnDefs, setColumnDefs] = useState<any[]>([]);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
-    fetch(`${config.apiHost}/csv/preview`, { credentials: "include" }) // Replace with your actual endpoint
-      .then(res => {
-        return res.text();
-      })
-      .then(data => {
-      console.log("Raw response text:", data);
+    axios
+      .get(`${config.apiHost}/csv/preview`, { withCredentials: true, responseType: "text" })
+      .then((response) => {
+        const data = response.data as string;
+
         if (data.length === 0) return;
-
+  
         // Split the text response
-        const rows = data.split("\n").map(row => row.split(","));
-        console.log("Parsed rows:", rows);
-
+        const rows = data.split("\n").map((row) => row.split(","));
+  
         // Create columnDefs based on how many columns are in the longest row
         const maxCols = Math.max(...rows.map((row: string[]) => row.length));
         console.log("Max columns:", maxCols);
         const cols = Array.from({ length: maxCols }, (_, i) => ({
-          headerName: i === 0 ? 'Field' : `Value ${i}`,
+          headerName: i === 0 ? "Field" : `Value ${i}`,
           field: `col${i}`,
           wrapText: true,
-          autoHeight: true,
+          autoHeight: true
         }));
-
+  
         // Transform row data to AG Grid format
         const transformed = rows.map((row: string[]) => {
           const rowObj: any = {};
@@ -49,7 +52,7 @@ const DownloadCSVPage: React.FC = () => {
           });
           return rowObj;
         });
-
+  
         setColumnDefs(cols);
         setRowData(transformed);
       })
@@ -66,18 +69,30 @@ const DownloadCSVPage: React.FC = () => {
     }
   };
 
-  const handleNewSession = async () => {
+  const handleDeleteUploads = async () => {
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      const response = await fetch(`${config.apiHost}/session/new`, {
+      const response = await axios.delete(`${config.apiHost}/uploads/delete`, {
+        withCredentials: true
+      });
+      const responseData = response.data as { message?: string };
+      toast.success(responseData.message || "Uploads deleted successfully.");
+
+      const sessionResponse = await fetch(`${config.apiHost}/session/new`, {
         method: "GET",
         credentials: "include"
       });
 
-      const data = await response.json();
-      console.log("New session token:", data.token);
-      window.location.href = `/${data.token}/documents`;
+      const sessionData = await sessionResponse.json();
+      window.location.href = `/${sessionData.token}/documents`;
     } catch (error) {
-      console.error("Failed to create new session:", error);
+      console.error("Failed to delete uploads:", error);
+      toast.error("Something went wrong. Try again.");
+    } finally {
+      setShowConfirm(false);
     }
   };
 
@@ -86,22 +101,30 @@ const DownloadCSVPage: React.FC = () => {
       <h1>Download CSV Page</h1>
       <div
         className="ag-theme-alpine"
-        style={{ height: "500px", marginBottom: "20px" }}
+        style={{ height: "500px", width: "100%", marginBottom: "20px" }}
       >
         <AgGridReact rowData={rowData} columnDefs={columnDefs} />
       </div>
       <button onClick={handleDownload} className="upload-button">
         Download CSV
       </button>
-      <button
-        onClick={handleNewSession}
-        className="upload-button"
-        style={{ marginLeft: "10px" }}
+      <NewSessionButton />
+      {showConfirm && <ConfirmDeleteModal onConfirm={confirmDelete} onCancel={() => setShowConfirm(false)} />}
+      <DeleteUploadsButton onClick={() => setShowConfirm(true)} />
+      <div
+        style={{
+          marginTop: "30px",
+          padding: "15px",
+          backgroundColor: "#fff3cd",
+          border: "1px solid #ffeeba",
+          borderRadius: "5px",
+          color: "#856404"
+        }}
       >
-        Analyse Documents Again
-      </button>
-      <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "5px", color: "#856404" }}>
-        <strong>Disclaimer:</strong> This tool uses AI to extract and generate data from uploaded documents. While we strive for accuracy, the results may contain errors. Do not upload confidential or sensitive information. Always verify results before use.
+        <strong>Disclaimer:</strong> This tool uses AI to extract and generate
+        data from uploaded documents. While we strive for accuracy, the results
+        may contain errors. Do not upload confidential or sensitive information.
+        Always verify results before use.
       </div>
     </div>
   );

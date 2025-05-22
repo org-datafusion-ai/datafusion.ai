@@ -3,6 +3,7 @@ import { join, resolve } from 'path';
 import { Request, Response } from 'express';
 import * as fs from 'fs';
 
+
 @Controller({ path: '*'})
 export class FrontendController {
   @All()

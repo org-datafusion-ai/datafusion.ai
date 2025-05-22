@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -18,31 +14,30 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import * as path from 'path';
 import { Request } from 'express';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 
 
 @Controller('api/uploads')
+@ApiTags('uploads')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(private readonly uploadService: UploadService) { }
 
-  /**
-   * Handles file upload and creates a corresponding upload record in the database.
-   * - Uses Multer to intercept the uploaded file.
-   * - TODO: Integrate with the user schema to dynamically retrieve userId from login.
-   *
-   * @param file - The uploaded file (handled by Multer).
-   * @returns A success message and the created upload record.
-   */
   @Post()
   @UseInterceptors(
     FilesInterceptor('filepond', 6, {
       fileFilter: (req, file, callback) => {
-        // filter the upload files types.
-        const fileExtension = path.extname(file.originalname).toLowerCase();
-        console.log('File MIME type:', file.mimetype);
-        console.log('fileExtension: ' + fileExtension);
 
+        const fileExtension = path.extname(file.originalname).toLowerCase();
         const allowedExtensions = ['.pdf', '.doc', '.docx', '.xlsx', '.txt', '.csv', '.xls'];
+
         if (!allowedExtensions.includes(fileExtension)) {
           return callback(
             new Error(
@@ -56,10 +51,27 @@ export class UploadController {
       },
     }),
   )
-  async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,)
-   {
+  @ApiOperation({ summary: 'Upload multiple files' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Files to upload',
+    schema: {
+      type: 'object',
+      properties: {
+        filepond: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Files uploaded successfully.' })
+  async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,) {
     const sessionToken = req.cookies['session_token'];
-   
+
     const uploadResults = await Promise.all(
       files.map(async (file) => {
         const fileExtension = path.extname(file.originalname).toLowerCase();
@@ -81,64 +93,21 @@ export class UploadController {
   }
 
 
-  //   async uploadFile(@UploadedFiles() files: Express.Multer.File[], @Req() req: Request,)
-  //  {
-  //   const sessionToken = req.cookies['session_token'];
-  //   const uploadResults: { filename: string; contentInStr: string }[] = [];
-
-
-  //   for (const file of files) {
-  //     const fileExtension = path.extname(file.originalname).toLowerCase();
-  //     const upload = await this.uploadService.createUpload(
-  //       file,
-  //       sessionToken,
-  //       fileExtension,
-  //     );
-  //     uploadResults.push({
-  //       filename: file.originalname,
-  //       contentInStr: upload.contentInStr,
-  //     });
-  //   }
-  //   return {
-  //     message: 'File uploaded successfully',
-  //     contentInStr: uploadResults,
-  //   };
-  // }
-
-  /**
-   * Retrieves all upload records from the database.
-   *
-   * @returns A list of all upload records.
-   */
   @Get()
+  @ApiOperation({ summary: 'Get all uploaded records' })
+  @ApiResponse({ status: 200, description: 'Returns all upload records.' })
   async getAllUploads() {
     return this.uploadService.getAllUploads();
   }
 
-  /**
-   * Retrieves a specific upload record by its ID.
-   *
-   * @param id - The unique ID of the upload record.
-   * @returns The upload record if found.
-   * @throws NotFoundException if the record is not found.
-   */
   @Get(':id')
+  @ApiOperation({ summary: 'Get a specific upload by ID' })
+  @ApiParam({ name: 'id', required: true })
+  @ApiResponse({ status: 200, description: 'Returns upload by ID.' })
   async getUploadById(@Param('id') id: string) {
     return this.uploadService.getUploadById(id);
   }
 
-  // ==============================
-  //  Update Operations
-  // ==============================
-
-  /**
-   * Updates the `processedData` field for a specific upload record after AI processing.
-   *
-   * @param id - The unique ID of the upload record.
-   * @param processedData - The processed data to update the record with.
-   * @returns A success message and the updated upload record.
-   * @throws NotFoundException if the record is not found.
-   */
   @Put(':id/updateProcessedData')
   async updateProcessedData(
     @Param('id') id: string,
@@ -151,16 +120,13 @@ export class UploadController {
     return { message: 'Processed data updated successfully', updatedUpload };
   }
 
-  /**
-   * Deletes a specific upload record from the database.
-   *
-   * @param id - The unique ID of the upload record to delete.
-   * @returns A success message confirming the deletion.
-   * @throws NotFoundException if the record is not found.
-   */
-  @Delete(':id')
-  async deleteUpload(@Param('id') id: string) {
-    await this.uploadService.deleteUpload(id);
-    return { message: 'Upload deleted successfully' };
+
+  @Delete('delete')
+  @ApiOperation({ summary: 'Delete an upload by ID' })
+  @ApiParam({ name: 'id', required: true })
+  @ApiResponse({ status: 200, description: 'Upload deleted successfully.' })
+  async deleteUploadsBySession(@Param('sessionToken') sessionToken: string) {
+    await this.uploadService.deleteUploadsBySession(sessionToken);
+    return { message: 'Uploads for this session deleted successfully' };
   }
 }
