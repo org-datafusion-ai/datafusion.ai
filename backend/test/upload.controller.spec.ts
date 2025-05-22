@@ -5,92 +5,111 @@ import { Request } from 'express';
 
 describe('UploadController', () => {
   let controller: UploadController;
-  let uploadService: UploadService;
+  let service: UploadService;
 
   const mockUploadService = {
     createUpload: jest.fn(),
     getAllUploads: jest.fn(),
     getUploadById: jest.fn(),
     updateProcessedData: jest.fn(),
-    deleteUpload: jest.fn(),
+    deleteUploadsBySession: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UploadController],
-      providers: [{ provide: UploadService, useValue: mockUploadService }],
+      providers: [
+        {
+          provide: UploadService,
+          useValue: mockUploadService,
+        },
+      ],
     }).compile();
 
     controller = module.get<UploadController>(UploadController);
-    uploadService = module.get<UploadService>(UploadService);
+    service = module.get<UploadService>(UploadService);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
   describe('uploadFile', () => {
-    it('should upload files and return results', async () => {
-      const mockFiles = [
-        { originalname: 'file1.pdf' },
-        { originalname: 'file2.docx' },
-      ] as Express.Multer.File[];
+    it('should return processed upload results', async () => {
+      const files = [
+        { originalname: 'test.pdf' } as Express.Multer.File,
+      ];
+      const req = { cookies: { session_token: 'abc123' } } as Request;
 
-      const mockRequest = {
-        cookies: { session_token: 'abc123' },
-      } as unknown as Request;
+      mockUploadService.createUpload.mockResolvedValueOnce({
+        contentInStr: 'mock content',
+      });
 
-      mockUploadService.createUpload
-        .mockResolvedValueOnce({ contentInStr: 'File1 content' })
-        .mockResolvedValueOnce({ contentInStr: 'File2 content' });
-
-      const result = await controller.uploadFile(mockFiles, mockRequest);
-
-      
+      const result = await controller.uploadFile(files, req);
 
       expect(result).toEqual({
         message: 'File uploaded successfully',
         contentInStr: [
-          { filename: 'file1.pdf', contentInStr: 'File1 content' },
-          { filename: 'file2.docx', contentInStr: 'File2 content' },
+          {
+            filename: 'test.pdf',
+            contentInStr: 'mock content',
+          },
         ],
       });
 
-      expect(mockUploadService.createUpload).toHaveBeenCalledTimes(2);
+      expect(service.createUpload).toHaveBeenCalledWith(
+        files[0],
+        'abc123',
+        '.pdf',
+      );
     });
   });
 
   describe('getAllUploads', () => {
     it('should return all uploads', async () => {
-      const mockData = [{ id: 1 }, { id: 2 }];
-      mockUploadService.getAllUploads.mockResolvedValue(mockData);
+      const uploads = [{ id: '1' }, { id: '2' }];
+      mockUploadService.getAllUploads.mockResolvedValue(uploads);
+
       const result = await controller.getAllUploads();
-      expect(result).toEqual(mockData);
+      expect(result).toEqual(uploads);
     });
   });
 
   describe('getUploadById', () => {
-    it('should return the upload with the given id', async () => {
-      const mockUpload = { id: '123', content: 'data' };
-      mockUploadService.getUploadById.mockResolvedValue(mockUpload);
-      const result = await controller.getUploadById('123');
-      expect(result).toEqual(mockUpload);
+    it('should return upload by ID', async () => {
+      const upload = { id: '1', name: 'file.txt' };
+      mockUploadService.getUploadById.mockResolvedValue(upload);
+
+      const result = await controller.getUploadById('1');
+      expect(result).toEqual(upload);
     });
   });
 
   describe('updateProcessedData', () => {
-    it('should update processed data and return updated upload', async () => {
-      const updated = { id: '123', processedData: { key: 'value' } };
-      mockUploadService.updateProcessedData.mockResolvedValue(updated);
-      const result = await controller.updateProcessedData('123', { key: 'value' });
+    it('should update processed data for an upload', async () => {
+      const id = 'abc123';
+      const processedData = { key: 'value' };
+      const updatedUpload = { id, data: processedData };
+
+      mockUploadService.updateProcessedData.mockResolvedValue(updatedUpload);
+
+      const result = await controller.updateProcessedData(id, processedData);
       expect(result).toEqual({
         message: 'Processed data updated successfully',
-        updatedUpload: updated,
+        updatedUpload,
       });
     });
   });
 
-  describe('deleteUpload', () => {
-    it('should delete the upload and return success message', async () => {
-      mockUploadService.deleteUpload.mockResolvedValue(undefined);
-      const result = await controller.deleteUpload('123');
-      expect(result).toEqual({ message: 'Upload deleted successfully' });
+  describe('deleteUploadsBySession', () => {
+    it('should delete uploads by session token', async () => {
+      mockUploadService.deleteUploadsBySession.mockResolvedValue(undefined);
+
+      const result = await controller.deleteUploadsBySession('abc123');
+      expect(result).toEqual({
+        message: 'Uploads for this session deleted successfully',
+      });
+      expect(service.deleteUploadsBySession).toHaveBeenCalledWith('abc123');
     });
   });
 });
