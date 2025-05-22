@@ -35,36 +35,46 @@ $ npm install
 ## Install Required Libraries
 ### installation cmd
 *nest.js*
+```bash
 npm i -g typescript @nestjs/cli
-
+```
 *connect with the front end*
+```bash
 npm install axios
-
+```
 *Encode pdf files.*
+```bash
 npm install pdf-parse
-
+```
 *Encode word files.*
+```bash
 npm install mammoth
-
+```
 *Encode Excel files.*
+```bash
 npm install xlsx 
-
+```
 *For openAI prompt*
+```bash
 npm i openai axios
-
+```
 ### Database installation cmd
 *most popular MongoDB object modeling tool.*
+```bash
 npm i @nestjs/mongoose mongoose
-
+```
 *upload files*
+```bash
 npm install --save-dev @types/express @types/multer
-
+```
 *Azure cosmos DB*
+```bash
 npm i --save @nestjs/azure-database 
-
+```
 *make sure the .env file can get access*
+```bash
 npm install @nestjs/config 
-
+```
 ## Database setup
 This guide explains how to set up MongoDB for your application, both locally and on Azure Cosmos DB using the MongoDB API. Follow the steps based on your environment.
 ### Local MongoDB Setup
@@ -217,13 +227,20 @@ CMD ["node", "dist/main"]
 4. Docker cmd 
 
 * Build and start the container:
+```bash
 // When you have made changes to the code:
 docker-compose up --build
+```
+
 // When you haven't made any changes and just want to test the app
+```bash
 docker-compose up
+```
 
 * Stop the containers
+```bash
 docker-compose down
+```
 
 
 ## Resources
