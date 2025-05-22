@@ -29,15 +29,18 @@ npm install ag-grid-community ag-grid-react
 npm install filepond react-filepond
 ```
 *Install FilePond plugins for additional features:*
+*Validate file size before upload*
 ```bash
 npm install filepond-plugin-file-validate-size
-```  *Validate file size before upload*
+``` 
+*Show image previews in FilePond* 
 ```bash
 npm install filepond-plugin-image-preview 
-```      *Show image previews in FilePond*
+``` 
+*Enable PDF preview in FilePond*     
 ```bash
 npm install filepond-plugin-pdf-preview 
-```        *Enable PDF preview in FilePond*       
+```               
 
 *To install all required dependencies at once, use the following command:*
 ```bash
