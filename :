@@ -1,0 +1,67 @@
+pick 73f77e5 Making it work
+pick 645406c New session and getting uploads based by session
+pick 9d525ec Needs a few more touch ups with refreshing
+pick 6425b70 Making export work and testing
+pick 549d2e4 cleaning up
+pick 6f99a28 Fix: Correct Excel file decoding and resolve AI request failure due to encoding issues.
+pick 90baaf9 Merged clean-up branch into generatingCSV
+pick bf13d30 Generating csv (#16)
+pick 8a586bb Generating csv (#17) # empty
+pick 490c06b modified :   backend/src/csv/csv.service.ts
+drop d5276f8 Merged clean-up into generatingCSV
+pick dee3b29 Merged clean-up into geneartingcsv
+pick 4227399 Updating NPM
+pick b556ba4 Changed CSV file format and this is the best version
+pick 803b5cc Changed CSV file format and this is the best version
+pick 28ab5d5 Modifying csv.service.ts
+pick 94bb7c3 Added special character handler so csv format doesnt break
+pick ddd8674 Preview page now shows data somewhat correctly
+pick a9d9d7c Fixed extra padding on the preview page
+pick 5792c14 Adding delete button and cleaning up code
+pick 32c172d Fixed broken preview page format
+pick c362ffa Fixed csv preview page ag grid sizing
+pick e69d629 Committing before creating a new branch
+pick c81029f adding testing
+pick 1d0b9af AI is thinking now disappears if an error pops up. Also added more detailed error when the file is an unsupported type
+pick 76828bb adding Naomi's change
+pick b3c552b adding test coverag
+pick d373c22 updat the README files
+pick 800536e update the README
+pick c59de74 update the README
+pick 1c7587e update the README
+pick 3ea6355 Updated swagger documentation
+pick 5db9fe2 Update ReadMe and documentation
+pick 21604ba Update Readme
+pick 3a460c5 Update read me
+drop 30a2b1b remove
+
+# Rebase 2d42df1..30a2b1b onto 2d42df1 (36 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+# f, fixup [-C | -c] <commit> = like "squash" but keep only the previous
+#                    commit's log message, unless -C is used, in which case
+#                    keep only this commit's message; -c is same as -C but
+#                    opens the editor
+# x, exec <command> = run command (the rest of the line) using shell
+# b, break = stop here (continue rebase later with 'git rebase --continue')
+# d, drop <commit> = remove commit
+# l, label <label> = label current HEAD with a name
+# t, reset <label> = reset HEAD to a label
+# m, merge [-C <commit> | -c <commit>] <label> [# <oneline>]
+#         create a merge commit using the original merge commit's
+#         message (or the oneline, if no original merge commit was
+#         specified); use -c <commit> to reword the commit message
+# u, update-ref <ref> = track a placeholder for the <ref> to be updated
+#                       to this position in the new commits. The <ref> is
+#                       updated at the end of the rebase
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
